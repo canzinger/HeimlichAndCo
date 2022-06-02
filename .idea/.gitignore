@@ -9,3 +9,7 @@
 
 # MacOs
 .DS_Store
+
+#Gradle
+build/
+.gradle/
