@@ -1,0 +1,1 @@
+decide whether to save which agent belongs to which player in Game or Board

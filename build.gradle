@@ -1,19 +1,57 @@
 plugins {
     id 'java'
+    id 'idea'
+    id "maven-publish"
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
-group 'ifs.tuwien.ac.at'
+group 'at.ac.tuwien.ifs.sge'
 version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.11
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation group: 'com.google.guava', name: 'guava', version: '28.0-jre'
+    implementation group: 'info.picocli', name: 'picocli', version: '3.9.6'
+    implementation files("sge-1.0.2-exe.jar")
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'com.pholser:junit-quickcheck-core:0.9'
+    testImplementation 'com.pholser:junit-quickcheck-generators:0.9'
 }
 
-test {
-    useJUnitPlatform()
+jar {
+    manifest {
+        attributes 'Sge-Type': 'game'
+        attributes 'Game-Class': 'HeimlichAndCo.HeimlichAndCo'
+        attributes 'Main-Class': 'engine.HeimlichAndCoMapGenerator'
+    }
+}
+
+shadowJar {
+    archiveClassifier.set('exe');
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sge-1.0.2-exe">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/sge-1.0.2-exe.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
