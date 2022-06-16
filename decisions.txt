@@ -1,1 +1,11 @@
-decide whether to save which agent belongs to which player in Game or Board
+decide whether to save which agent belongs to which player in Game or Board -> Board will just have public information, the Game (meaning class
+HeimlichAndCo will save which agent belongs to which player)
+
+How do you encode the fields? each field could be 0-10 and -3 these could be field IDs but this would be kind of hard to model then the field position. Positive would be that
+each field has the information about the points received "built into it". With the other approach (each field gets a number from 0-11) so indexing could be done with modulo 12 calculation
+it will be easier to calculate the resulting fields after movement, but one would need an extra function to get the points per field. I chose the second option.
+
+
+
+Challenges:
+- make it impossible for agents to cheat
