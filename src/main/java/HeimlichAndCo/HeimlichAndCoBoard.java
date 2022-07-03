@@ -57,6 +57,15 @@ public class HeimlichAndCoBoard {
     }
 
     /**
+     * gives back the score Map
+     * note that this is safe, as the player agents never have access to the real Board
+     * @return Hashmap containing the current scores for each agent
+     */
+    public Map<Agent, Integer> getScores() {
+        return scores;
+    }
+
+    /**
      * awards all playings agents points according to their position on the board
      */
     public void awardPoints() {

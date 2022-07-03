@@ -10,4 +10,5 @@ use "defensive" approach for board?? throw exceptions or just do it???
 
 Challenges:
 - make it impossible for agents to cheat
+     + player agents never receive access to the Board, they only get a copy of it
 - String representation of Board

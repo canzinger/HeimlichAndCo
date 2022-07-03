@@ -52,39 +52,15 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return currentPlayer;
     }
 
-    @Override
-    public double[] getGameUtilityValue() {
-        return Game.super.getGameUtilityValue();
-    }
-
-    @Override
-    public double getPlayerUtilityWeight(int player) {
-        return Game.super.getPlayerUtilityWeight(player);
-    }
-
-    @Override
-    public double[] getGameHeuristicValue() {
-        return Game.super.getGameHeuristicValue();
-    }
-
-    @Override
-    public double getPlayerHeuristicWeight(int player) {
-        return Game.super.getPlayerHeuristicWeight(player);
-    }
-
-    @Override
-    public double getUtilityValue(double... weights) {
-        return Game.super.getUtilityValue(weights);
-    }
-
-    @Override
-    public double getHeuristicValue(double... weights) {
-        return Game.super.getHeuristicValue(weights);
-    }
-
+    /**
+     * just returns the current score of the player
+     *
+     * @param i player for which utility is wanted
+     * @return utility value
+     */
     @Override
     public double getUtilityValue(int i) {
-        return 0;
+        return board.getScores().get(playersToAgentsMap.get(i));
     }
 
     @Override
@@ -147,18 +123,14 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     @Override
-    public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame() {
-        return Game.super.getGame();
-    }
-
-    @Override
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
         return null;
     }
 
+    //TODO implement other information other than board
     @Override
     public String toTextRepresentation() {
-        return Game.super.toTextRepresentation();
+        return board.toString();
     }
 
     @Override
