@@ -49,7 +49,7 @@ public class HeimlichAndCoBoard {
      */
     public void moveAgent(Agent a, int numberOfFields) {
         int oldPosition = agentsPositions.get(a);
-        agentsPositions.replace(a, (oldPosition + numberOfFields) % numberOfFields);
+        agentsPositions.replace(a, (oldPosition + numberOfFields) % HeimlichAndCoBoard.numberOfFields);
     }
 
     public void moveSafe(int fieldId) {
@@ -284,14 +284,15 @@ public class HeimlichAndCoBoard {
     public Map<Integer, Agent[]> agentsOnFields() {
         Map<Integer, Agent[]> agentsMap = new HashMap<>();
         for (int i = 0; i < numberOfFields; i++) {
-            List<Agent> agents = new LinkedList<Agent>();
-            for (Agent a: Agent.values()) {
+            List<Agent> agents = new LinkedList<>();
+            for (Agent a: this.agents) {
                 if (agentsPositions.get(a) == i) {
                     agents.add(a);
                 }
             }
             agentsMap.put(i, agents.toArray(new Agent[0]));
         }
+        System.out.println("Here1");
         return agentsMap;
     }
 

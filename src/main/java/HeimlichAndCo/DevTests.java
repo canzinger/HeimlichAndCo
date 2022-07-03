@@ -2,7 +2,10 @@ package HeimlichAndCo;
 
 public class DevTests {
     public static void main(String[] args) {
-        HeimlichAndCoBoard board = new HeimlichAndCoBoard();
+        HeimlichAndCoBoard board = new HeimlichAndCoBoard(6);
+        System.out.println(board);
+        board.moveSafe(11);
+        board.moveAgent(Agent.Perry, 3);
         System.out.println(board);
     }
 }
