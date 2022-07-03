@@ -12,3 +12,5 @@ Challenges:
 - make it impossible for agents to cheat
      + player agents never receive access to the Board, they only get a copy of it
 - String representation of Board
+- handle large number of possible actions
+     + assume there are 7 agents playing, and one agent rolled a 6; then there are

@@ -22,12 +22,29 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         playersToAgentsMap = new HashMap<Integer, Agent>();
     }
 
+    //information that should not be public is stripped, there is only one thing, that is the map that maps the players to their agents
+    // there might be some functions which do not work for the game with stripped information
+    // an agent can find out which player belongs to him by using the playersToAgentsMap with only one entry
+    public HeimlichAndCo(HeimlichAndCo game, boolean stripInformation) {
+        this.die = new Die();
+        //TODO do the same for cards
+        if (stripInformation) {
+            playersToAgentsMap = new HashMap<>();
+            playersToAgentsMap.put(game.currentPlayer, game.playersToAgentsMap.get(game.currentPlayer));
+        } else {
+            playersToAgentsMap = new HashMap<>(game.playersToAgentsMap);
+        }
+        board = game.board.clone();
+        numberOfPLayers = game.numberOfPLayers;
+        currentPlayer = game.currentPlayer;
+    }
+
     @Override
     public boolean isGameOver() {
         // the game ends, if there is a score marker that reaches the field 42, i.e. if there is a player with a score of 42 or more.
 
-        //is only over if it is also the end of a round
-        return false;
+        //is only over if it is also the end of a round???
+        return board.isGameOver();
     }
 
     @Override
@@ -70,6 +87,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public Set<HeimlichAndCoAction> getPossibleActions() {
+        //check if the last Action triggered a Wertung
         return null;
     }
 
@@ -124,7 +142,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
-        return null;
+        return new HeimlichAndCo(this, true);
     }
 
     //TODO implement other information other than board
@@ -137,7 +155,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> doAction(HeimlichAndCoAction heimlichAndCoAction) {
         return null;
     }
-
 
     /** gives information about the amount of dummy agents that need to be in play according to the rulebook
      *

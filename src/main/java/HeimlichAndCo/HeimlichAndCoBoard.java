@@ -301,9 +301,20 @@ public class HeimlichAndCoBoard {
             }
             agentsMap.put(i, agents.toArray(new Agent[0]));
         }
-        System.out.println("Here1");
         return agentsMap;
     }
 
+    public boolean isGameOver() {
+        for(Agent a: agents) {
+            if (scores.get(a) >= 42) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Agent[] getAgents() {
+        return agents;
+    }
 }
 
