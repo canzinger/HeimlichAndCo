@@ -10,3 +10,4 @@ use "defensive" approach for board?? throw exceptions or just do it???
 
 Challenges:
 - make it impossible for agents to cheat
+- String representation of Board

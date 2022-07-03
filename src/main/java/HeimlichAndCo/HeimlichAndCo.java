@@ -3,15 +3,23 @@ import HeimlichAndCo.Util.Die;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
 import at.ac.tuwien.ifs.sge.game.Game;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoard>{
 
     private final Die die;
+    private int currentPlayer;
+    private int numberOfPLayers;
+    private HeimlichAndCoBoard board;
+    // map which saves which player is assigned to which Agent (SECRET!)
+    private final Map<Integer, Agent> playersToAgentsMap;
 
     public HeimlichAndCo() {
         this.die = new Die();
+        playersToAgentsMap = new HashMap<Integer, Agent>();
     }
 
     @Override
@@ -25,23 +33,23 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     @Override
     public int getMinimumNumberOfPlayers() {
         // minimum number of 2 players
-        return 0;
+        return 2;
     }
 
     @Override
     public int getMaximumNumberOfPlayers() {
         // maximum of 7 players (according to the real game; could probably adapt game though)
-        return 0;
+        return 7;
     }
 
     @Override
     public int getNumberOfPlayers() {
-        return 0;
+        return numberOfPLayers;
     }
 
     @Override
     public int getCurrentPlayer() {
-        return 0;
+        return currentPlayer;
     }
 
     @Override
@@ -89,9 +97,13 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return null;
     }
 
+    /**
+     * gives the agents the possibility to get a copy of the board which can be modified however
+     * @return a copy of the board
+     */
     @Override
     public HeimlichAndCoBoard getBoard() {
-        return null;
+        return board.clone();
     }
 
     @Override
