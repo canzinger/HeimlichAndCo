@@ -9,7 +9,7 @@ import java.util.Random;
  */
 public class Die {
     private final int[] faces = {13, 2, 3, 4, 5, 6};
-    private Random random;
+    private final Random random;
 
     public Die() {
         this.random = new Random();
@@ -21,5 +21,9 @@ public class Die {
      */
     public int roll() {
         return faces[random.nextInt(faces.length)];
+    }
+
+    public int[] getFaces() {
+        return faces;
     }
 }

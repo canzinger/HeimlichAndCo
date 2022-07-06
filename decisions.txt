@@ -14,3 +14,9 @@ Challenges:
 - String representation of Board
 - handle large number of possible actions
      + assume there are 7 agents playing, and one agent rolled a 6; then there are
+- how to model the die roll?
+    + as extra action?
+    + by automatic determinization (this would probably make it harder for the agents to submit custom die rolls if they want to
+    + I want to allow custom die rolls for mcts
+- subclasses for HeimlichAndCoAction or encode them all into one class?
+    + dieRoll, AgentMove, SafeMove

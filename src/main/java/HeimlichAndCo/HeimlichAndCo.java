@@ -1,32 +1,27 @@
 package HeimlichAndCo;
-import HeimlichAndCo.Util.Die;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
 import at.ac.tuwien.ifs.sge.game.Game;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoard>{
 
-    private final Die die;
     private int currentPlayer;
     private int numberOfPLayers;
     private HeimlichAndCoBoard board;
     // map which saves which player is assigned to which Agent (SECRET!)
     private final Map<Integer, Agent> playersToAgentsMap;
 
+    LinkedList<ActionRecord<HeimlichAndCoAction>> actionRecords;
+
     public HeimlichAndCo() {
-        this.die = new Die();
-        playersToAgentsMap = new HashMap<Integer, Agent>();
+        playersToAgentsMap = new HashMap<>();
     }
 
     //information that should not be public is stripped, there is only one thing, that is the map that maps the players to their agents
     // there might be some functions which do not work for the game with stripped information
     // an agent can find out which player belongs to him by using the playersToAgentsMap with only one entry
     public HeimlichAndCo(HeimlichAndCo game, boolean stripInformation) {
-        this.die = new Die();
         //TODO do the same for cards
         if (stripInformation) {
             playersToAgentsMap = new HashMap<>();
@@ -37,6 +32,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         board = game.board.clone();
         numberOfPLayers = game.numberOfPLayers;
         currentPlayer = game.currentPlayer;
+        actionRecords = new LinkedList<>();
     }
 
     @Override
@@ -44,6 +40,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         // the game ends, if there is a score marker that reaches the field 42, i.e. if there is a player with a score of 42 or more.
 
         //is only over if it is also the end of a round???
+        //TODO
         return board.isGameOver();
     }
 
@@ -102,6 +99,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> doAction() {
+        //TODO this should actually never happen in my game!
         return Game.super.doAction();
     }
 
@@ -117,22 +115,17 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public ActionRecord<HeimlichAndCoAction> getPreviousActionRecord() {
-        return Game.super.getPreviousActionRecord();
-    }
-
-    @Override
-    public HeimlichAndCoAction getPreviousAction() {
-        return Game.super.getPreviousAction();
+        if (!actionRecords.isEmpty()) {
+            return actionRecords.getLast();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public List<ActionRecord<HeimlichAndCoAction>> getActionRecords() {
-        return null;
-    }
-
-    @Override
-    public int getNumberOfActions() {
-        return Game.super.getNumberOfActions();
+        //TODO make this safe, i.e. a deep copy
+        return new LinkedList<>(actionRecords);
     }
 
     @Override
@@ -145,15 +138,32 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return new HeimlichAndCo(this, true);
     }
 
-    //TODO implement other information other than board
+    //TODO change for more information
     @Override
     public String toTextRepresentation() {
-        return board.toString();
+        return "Number of players: " + numberOfPLayers + "\n" +
+                "CurrentPlayer: " + currentPlayer + "\n" +
+                board.toString();
     }
 
     @Override
-    public Game<HeimlichAndCoAction, HeimlichAndCoBoard> doAction(HeimlichAndCoAction heimlichAndCoAction) {
-        return null;
+    public HeimlichAndCo doAction(HeimlichAndCoAction heimlichAndCoAction) {
+        HeimlichAndCo newGame = new HeimlichAndCo(this, false);
+        newGame.applyAction(heimlichAndCoAction);
+        return newGame;
+    }
+
+    /**
+     * applies an action to this game, i.e. does not create a copy of this game as doAction does
+     * @param action action to take
+     */
+    private void applyAction(HeimlichAndCoAction action) {
+        // TODO check for valid action
+        int ret = action.doAction(this.board);
+        this.actionRecords.addLast(new ActionRecord<>(currentPlayer, action));
+        if (ret == -1) {
+            this.currentPlayer = (this.currentPlayer + 1) % numberOfPLayers;
+        }
     }
 
     /** gives information about the amount of dummy agents that need to be in play according to the rulebook

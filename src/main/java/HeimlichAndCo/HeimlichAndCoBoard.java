@@ -1,5 +1,6 @@
 package HeimlichAndCo;
 
+import HeimlichAndCo.Util.Die;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.HashMap;
@@ -26,6 +27,10 @@ public class HeimlichAndCoBoard {
     private int safePosition;
     private final static int numberOfFields = 12;
 
+    private int lastDieRoll;
+
+    private final Die die;
+
     // constructors
 
     public HeimlichAndCoBoard() {
@@ -33,6 +38,7 @@ public class HeimlichAndCoBoard {
         this.agentsPositions = getAgentMapWithZeros(agents);
         this.scores = getAgentMapWithZeros(agents);
         this.safePosition = 7; //the default starting position for the safe
+        this.die = new Die();
     }
 
     public HeimlichAndCoBoard(int numberOfAgents) {
@@ -40,6 +46,7 @@ public class HeimlichAndCoBoard {
         this.agentsPositions = getAgentMapWithZeros(agents);
         this.scores = getAgentMapWithZeros(agents);
         this.safePosition = 7; //the default starting position for the safe
+        this.die = new Die();
     }
 
     /**
@@ -52,6 +59,20 @@ public class HeimlichAndCoBoard {
         agentsPositions.replace(a, (oldPosition + numberOfFields) % HeimlichAndCoBoard.numberOfFields);
     }
 
+    /**
+     * moves multiple agents by certain number of fields
+     * @param agentsMoves Map denoting the amount of fields certain agents should move forward
+     */
+    public void moveAgents(Map<Agent, Integer> agentsMoves) {
+        for(Agent a: agentsMoves.keySet()) {
+            moveAgent(a, agentsMoves.get(a));
+        }
+    }
+
+    /**
+     * moves to safe to a given field
+     * @param fieldId target field for safe; must be ABSOLUTE POSITION
+     */
     public void moveSafe(int fieldId) {
         safePosition = fieldId;
     }
@@ -290,6 +311,10 @@ public class HeimlichAndCoBoard {
         return stringBuilder.toString();
     }
 
+    /**
+     * gives back the Agents on certain fields
+     * @return a map with entries for each field and a corresponding array giving the agents in the given field
+     */
     public Map<Integer, Agent[]> agentsOnFields() {
         Map<Integer, Agent[]> agentsMap = new HashMap<>();
         for (int i = 0; i < numberOfFields; i++) {
@@ -315,6 +340,30 @@ public class HeimlichAndCoBoard {
 
     public Agent[] getAgents() {
         return agents;
+    }
+
+    public int getSafePosition() {
+        return safePosition;
+    }
+
+    public int getNumberOfFields() {
+        return numberOfFields;
+    }
+
+    public Map<Agent, Integer> getAgentsPositions() {
+        return agentsPositions;
+    }
+
+    public int getLastDieRoll() {
+        return lastDieRoll;
+    }
+
+    public void setLastDieRoll(int lastDieRoll) {
+        this.lastDieRoll = lastDieRoll;
+    }
+
+    public void rollDie() {
+        this.lastDieRoll = die.roll();
     }
 }
 
