@@ -15,7 +15,8 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction{
         this.triggersScoringRound = triggersScoringRound;
     }
 
-    public static Set<HeimlichAndCoAction> getPossibleActions(HeimlichAndCoBoard board, int dieRoll) {
+    public static Set<HeimlichAndCoAction> getPossibleActions(HeimlichAndCoBoard board) {
+        int dieRoll = board.getLastDieRoll();
         Set<HeimlichAndCoAction> retSet = new HashSet<>();
         Agent[] playingAgents = board.getAgents();
         for(int agent0 = dieRoll; agent0 >= 0; agent0--) {
@@ -70,7 +71,9 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction{
             if (agentsMoves.containsKey(a)) {
                 stringBuilder.append(a.toString()).append(": ").append(agentsMoves.get(a)).append("\n");
             }
-
+        }
+        if (triggersScoringRound) {
+            stringBuilder.append("Triggers scoring round\n");
         }
         return stringBuilder.toString();
     }
@@ -105,6 +108,21 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction{
     @Override
     public int doAction(HeimlichAndCoBoard board) {
         board.moveAgents(agentsMoves);
+        if (triggersScoringRound) {
+            board.awardPoints();
+        }
         return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof HeimlichAndCoAgentMoveAction) {
+            HeimlichAndCoAgentMoveAction toComp = (HeimlichAndCoAgentMoveAction) obj;
+            return  toComp.agentsMoves.equals(this.agentsMoves) && toComp.triggersScoringRound && this.triggersScoringRound;
+        }
+        return false;
     }
 }

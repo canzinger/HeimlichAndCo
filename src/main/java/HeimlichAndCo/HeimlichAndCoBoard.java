@@ -1,7 +1,6 @@
 package HeimlichAndCo;
 
 import HeimlichAndCo.Util.Die;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -364,6 +363,10 @@ public class HeimlichAndCoBoard {
 
     public void rollDie() {
         this.lastDieRoll = die.roll();
+    }
+
+    public Die getDie() {
+        return die;
     }
 }
 

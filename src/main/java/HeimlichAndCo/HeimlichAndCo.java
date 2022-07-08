@@ -14,6 +14,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     LinkedList<ActionRecord<HeimlichAndCoAction>> actionRecords;
 
+    private boolean allowCustomDieRolls; //TODO
+
     public HeimlichAndCo() {
         playersToAgentsMap = new HashMap<>();
     }
@@ -85,6 +87,24 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     @Override
     public Set<HeimlichAndCoAction> getPossibleActions() {
         //check if the last Action triggered a Wertung
+        if (actionRecords.isEmpty()) {
+            return HeimlichAndCoDieRollAction.getPossibleActions(allowCustomDieRolls, board.getDie().getFaces());
+        } else {
+            //TODO maybe improve
+            HeimlichAndCoAction lastAction = getPreviousAction();
+            if (lastAction instanceof HeimlichAndCoDieRollAction) {
+                return HeimlichAndCoAgentMoveAction.getPossibleActions(board);
+            } else if (lastAction instanceof HeimlichAndCoAgentMoveAction) {
+                HeimlichAndCoAgentMoveAction agentMoveAction = (HeimlichAndCoAgentMoveAction) lastAction;
+                if (agentMoveAction.isTriggersScoringRound()) {
+                    return HeimlichAndCoSafeMoveAction.getPossibleActions(board);
+                } else {
+                    return HeimlichAndCoDieRollAction.getPossibleActions(allowCustomDieRolls, board.getDie().getFaces());
+                }
+            } else if (lastAction instanceof HeimlichAndCoSafeMoveAction) {
+                return HeimlichAndCoDieRollAction.getPossibleActions(allowCustomDieRolls, board.getDie().getFaces());
+            }
+        }
         return null;
     }
 
@@ -105,11 +125,15 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public boolean isValidAction(HeimlichAndCoAction action) {
+        if (action == null) {
+            return false;
+        }
         return Game.super.isValidAction(action);
     }
 
     @Override
     public HeimlichAndCoAction determineNextAction() {
+        //TODO this should never actually happen!
         return null;
     }
 
@@ -135,7 +159,11 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
-        return new HeimlichAndCo(this, true);
+        int oldCurrentPlayer = this.currentPlayer;
+        this.currentPlayer = i;
+        HeimlichAndCo copy = new HeimlichAndCo(this, true);
+        this.currentPlayer = oldCurrentPlayer;
+        return copy;
     }
 
     //TODO change for more information
@@ -158,7 +186,9 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @param action action to take
      */
     private void applyAction(HeimlichAndCoAction action) {
-        // TODO check for valid action
+        if (!isValidAction(action)) {
+            throw new IllegalArgumentException("Invalid Action given");
+        }
         int ret = action.doAction(this.board);
         this.actionRecords.addLast(new ActionRecord<>(currentPlayer, action));
         if (ret == -1) {

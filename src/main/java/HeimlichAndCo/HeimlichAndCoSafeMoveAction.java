@@ -1,7 +1,5 @@
 package HeimlichAndCo;
 
-import HeimlichAndCo.Util.Die;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +11,7 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction{
         this.newSafeLocation = newSafeLocation;
     }
 
-    public Set<HeimlichAndCoAction> getPossibleActions(HeimlichAndCoBoard board) {
+    public static Set<HeimlichAndCoAction> getPossibleActions(HeimlichAndCoBoard board) {
         Set<HeimlichAndCoAction> possibleActions = new HashSet<>();
         int currentSafePosition = board.getSafePosition();
         for (int i = 0; i < board.getNumberOfFields(); i++) {
@@ -34,5 +32,17 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction{
     public int doAction(HeimlichAndCoBoard board) {
         board.moveSafe(newSafeLocation);
         return -1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof HeimlichAndCoSafeMoveAction) {
+            HeimlichAndCoSafeMoveAction toComp = (HeimlichAndCoSafeMoveAction) obj;
+            return toComp.newSafeLocation == this.newSafeLocation;
+        }
+        return false;
     }
 }
