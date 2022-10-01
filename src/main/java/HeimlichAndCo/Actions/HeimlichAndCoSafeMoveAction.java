@@ -1,9 +1,11 @@
-package HeimlichAndCo;
+package HeimlichAndCo.Actions;
+
+import HeimlichAndCo.HeimlichAndCoBoard;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction{
+public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
 
     private final int newSafeLocation;
 
@@ -23,15 +25,15 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction{
     }
 
     public String toString() {
-        return "SafeMoveAction:\n" +
-                "move safe to " + newSafeLocation + "\n";
+        return "SafeMoveAction:" +
+                "move safe to " + newSafeLocation;
     }
 
     //TODO change this for cards
     @Override
-    public int doAction(HeimlichAndCoBoard board) {
+    public int applyAction(HeimlichAndCoBoard board) {
         board.moveSafe(newSafeLocation);
-        return -1;
+        return 0;
     }
 
     @Override
@@ -44,5 +46,10 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction{
             return toComp.newSafeLocation == this.newSafeLocation;
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return newSafeLocation;
     }
 }

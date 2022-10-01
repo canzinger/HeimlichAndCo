@@ -1,5 +1,6 @@
 package HeimlichAndCo;
 
+import HeimlichAndCo.Cards.HeimlichAndCoCard;
 import HeimlichAndCo.Util.Die;
 
 import java.util.HashMap;
@@ -17,36 +18,35 @@ public class HeimlichAndCoBoard {
     /**
      * saves the positions of each agent
      */
-    private Map<Agent, Integer> agentsPositions;
+    private Map<Agent, Integer> agentsPositions; //must have an entry for all playing agents
 
     /**
      * saves the current points of each agent
      */
-    private Map<Agent, Integer> scores;
+    private Map<Agent, Integer> scores; //must have an entry for all playing agents
     private int safePosition;
     private final static int numberOfFields = 12;
-
     private int lastDieRoll;
-
     private final Die die;
 
-    // constructors
+    //region constructors
 
     public HeimlichAndCoBoard() {
-        agents = getParticipatingAgents(7); //default number of agents
-        this.agentsPositions = getAgentMapWithZeros(agents);
-        this.scores = getAgentMapWithZeros(agents);
-        this.safePosition = 7; //the default starting position for the safe
-        this.die = new Die();
+        this(7);
     }
 
     public HeimlichAndCoBoard(int numberOfAgents) {
-        agents = getParticipatingAgents(numberOfAgents);
+        if (numberOfAgents < 5 || numberOfAgents > 7) {
+            throw new IllegalArgumentException("Invalid amount of playing agents, must be between 5 and 7");
+        }
+        this.agents = getParticipatingAgents(numberOfAgents);
         this.agentsPositions = getAgentMapWithZeros(agents);
         this.scores = getAgentMapWithZeros(agents);
         this.safePosition = 7; //the default starting position for the safe
         this.die = new Die();
     }
+
+    //endregion
 
     /**
      * moves an agent forward a certain number of fields
@@ -123,9 +123,7 @@ public class HeimlichAndCoBoard {
     private Agent[] getParticipatingAgents(int number) {
         Agent[] totalAgents = Agent.values();
         Agent[] participatingAgents = new Agent[number];
-        for (int i = 0; i < number; i++) {
-            participatingAgents[i] = totalAgents[i];
-        }
+        System.arraycopy(totalAgents, 0, participatingAgents, 0, number);
         return participatingAgents;
     }
 
@@ -144,10 +142,11 @@ public class HeimlichAndCoBoard {
 
     @Override
     public HeimlichAndCoBoard clone() {
-        HeimlichAndCoBoard newBoard = new HeimlichAndCoBoard();
+        HeimlichAndCoBoard newBoard = new HeimlichAndCoBoard(this.agents.length);
+        newBoard.lastDieRoll = this.lastDieRoll;
         newBoard.safePosition = this.safePosition;
-        newBoard.agentsPositions = new HashMap<Agent, Integer>(this.agentsPositions); //TODO check if this is safe 100%
-        newBoard.scores = new HashMap<Agent, Integer>(this.scores); //TODO check if this is safe 100%
+        newBoard.agentsPositions = new HashMap<>(this.agentsPositions);
+        newBoard.scores = new HashMap<>(this.scores);
         System.arraycopy(this.agents, 0, newBoard.agents, 0, this.agents.length);
         return newBoard;
         //TODO adapt to new variables in HeimlichAndCoBoard
@@ -307,6 +306,9 @@ public class HeimlichAndCoBoard {
         for (Agent a: agents) {
             stringBuilder.append(a.toString()).append(": ").append(scores.get(a)).append("\n");
         }
+        if (lastDieRoll != 0) {
+            stringBuilder.append("Last die roll: ").append(lastDieRoll).append("\n");
+        }
         return stringBuilder.toString();
     }
 
@@ -368,5 +370,7 @@ public class HeimlichAndCoBoard {
     public Die getDie() {
         return die;
     }
+
+    public int getRuinsField() {return 11;}
 }
 

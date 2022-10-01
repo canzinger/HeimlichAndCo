@@ -1,11 +1,11 @@
-package HeimlichAndCo;
+package HeimlichAndCo.Actions;
 
-import HeimlichAndCo.Util.Die;
+import HeimlichAndCo.HeimlichAndCoBoard;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction{
+public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
 
     //this can either be a custom action (meaning the die roll is decided by the initiator) or just an action to roll the die
     int dieRoll;
@@ -31,7 +31,7 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction{
             for (int face : dieFaces) {
                 possibleActions.add(new HeimlichAndCoDieRollAction(face));
             }
-            //TODO maybe add random Roll here aswell??
+            possibleActions.add(getRandomRollAction());
         } else {
             possibleActions.add(new HeimlichAndCoDieRollAction(true));
         }
@@ -40,15 +40,19 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction{
 
     public String toString() {
         if (randomRoll) {
-            return "DieRollAction (random)\n";
+            if (dieRoll == 0) {
+                return "DieRollAction (random)";
+            } else { //adding the result of the random roll to the string in case it is known
+                return "DieRollAction (random) - roll: " + dieRoll;
+            }
         } else {
-            return "DieRollAction (custom), roll: " + dieRoll + "\n";
+            return "DieRollAction (custom) - roll: " + dieRoll;
         }
     }
 
     @Override
-    public int doAction(HeimlichAndCoBoard board) {
-        if (randomRoll) {
+    public int applyAction(HeimlichAndCoBoard board) {
+        if (!randomRoll) {
             board.setLastDieRoll(dieRoll);
         } else {
             board.rollDie();
@@ -58,7 +62,7 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction{
     }
 
     //returns the action for a random die Roll
-    public HeimlichAndCoDieRollAction getRandomRollAction() {
+    public static HeimlichAndCoDieRollAction getRandomRollAction() {
         return new HeimlichAndCoDieRollAction(true);
     }
 
@@ -71,6 +75,17 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction{
             HeimlichAndCoDieRollAction toComp = (HeimlichAndCoDieRollAction) obj;
             return toComp.randomRoll == this.randomRoll && toComp.dieRoll == this.dieRoll;
         }
+
         return false;
     }
+
+
+    public int hashCode() {
+        if (this.randomRoll) {
+            return 420;
+        } else {
+            return this.dieRoll * 5;
+        }
+    }
+
 }

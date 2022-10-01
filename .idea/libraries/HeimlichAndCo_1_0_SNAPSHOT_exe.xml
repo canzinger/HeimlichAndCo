@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="HeimlichAndCo-1.0-SNAPSHOT-exe">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/libs/HeimlichAndCo-1.0-SNAPSHOT-exe.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
