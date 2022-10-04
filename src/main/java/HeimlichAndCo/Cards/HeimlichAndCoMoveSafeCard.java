@@ -34,4 +34,14 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
         return actions;
     }
 
+    @Override
+    public int hashCode() {
+        return cardSpecification.hashCode() * 53;
+    }
+
+    public HeimlichAndCoMoveSafeCard clone() {
+        return new HeimlichAndCoMoveSafeCard(cardSpecification.clone());
+    }
+
+
 }

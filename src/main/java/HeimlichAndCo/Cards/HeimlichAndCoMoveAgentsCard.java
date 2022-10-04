@@ -315,5 +315,12 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         return agentPairs;
     }
 
+    @Override
+    public int hashCode() {
+        return cardSpecification.hashCode() * 47;
+    }
 
+    public HeimlichAndCoMoveAgentsCard clone() {
+        return new HeimlichAndCoMoveAgentsCard(cardSpecification.clone());
+    }
 }

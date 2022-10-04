@@ -51,4 +51,13 @@ public class HeimlichAndCoAddScorePointsCard extends HeimlichAndCoCard{
         }
         return actions;
     }
+
+    @Override
+    public int hashCode() {
+        return cardSpecification.hashCode() * 41;
+    }
+
+    public HeimlichAndCoAddScorePointsCard clone() {
+        return new HeimlichAndCoAddScorePointsCard(cardSpecification.clone());
+    }
 }

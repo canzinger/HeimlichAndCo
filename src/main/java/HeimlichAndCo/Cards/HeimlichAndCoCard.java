@@ -7,7 +7,7 @@ import HeimlichAndCo.HeimlichAndCoBoard;
 import java.util.Arrays;
 import java.util.Set;
 
-public abstract class HeimlichAndCoCard {
+public abstract class HeimlichAndCoCard{
 
     protected final HeimlichAndCoCardSpecification cardSpecification;
 
@@ -16,6 +16,7 @@ public abstract class HeimlichAndCoCard {
     }
 
     /**
+     * plays/applies the card on the current board with the given agents and number
      *
      * @param board to which the Card should be applied
      * @param agents which should be used for the card (if applicable)
@@ -35,7 +36,7 @@ public abstract class HeimlichAndCoCard {
             }
         }
 
-        applyCardSpecific(board, agents, number); //TODO
+        applyCardSpecific(board, agents, number);
     }
 
     private boolean checkArgumentsAgainstCardSpecification(Agent[] agents) {
@@ -56,15 +57,37 @@ public abstract class HeimlichAndCoCard {
 
     public abstract Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board);
 
-
-
     /**
      * Returns the HeimlichAndCoCardSpecification for the given card.
      * Giving information about how many agents or numbers are needed to apply the card.
-     * @return the card speficiation
+     * @return the card specification
      */
     HeimlichAndCoCardSpecification getCardSpecification() {
         return cardSpecification;
+    }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (this.getClass().equals(obj.getClass())) {
+            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
+        } else {
+            return false;
+        }
+    }
+
+    public abstract int hashCode();
+
+    public abstract HeimlichAndCoCard clone();
+
+    /**
+     * Will return true if the card will have the same outcome whether it is played with [Agent1, Agent2] or [Agent2, Agent1]
+     *
+     * @return whether the card will have a different effect if the positions of agents are swapped
+     */
+    public boolean agentsOrderInvariant() {
+        return this.cardSpecification.agentsOrderInvariant;
     }
 
 }

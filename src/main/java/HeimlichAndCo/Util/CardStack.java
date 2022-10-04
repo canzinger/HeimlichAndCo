@@ -2,9 +2,9 @@ package HeimlichAndCo.Util;
 
 import java.util.*;
 
-public class CardStack<T> {
+public class CardStack<T>{
 
-    List<T> cards;
+    private final List<T> cards;
 
     public CardStack(List<T> cards) {
         this.cards = new ArrayList<>(cards);
@@ -23,14 +23,13 @@ public class CardStack<T> {
         return returnCard;
     }
 
-    public CardStack<T> clone() {
-        List<T> newCards = new LinkedList<>(this.cards); //TODO
-        return new CardStack<>(newCards);
-    }
-
     public boolean isEmpty() {
         return cards.size() == 0;
     }
 
     public int count() {return cards.size();}
+
+    public List<T> getCards() {
+        return cards;
+    }
 }
