@@ -67,7 +67,12 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             if (withCards) {
                 cards.replaceAll((p, v) -> new LinkedList<>(game.cards.get(p)));
             }
-            cardStack = game.cardStack.clone();
+            HeimlichAndCoCard[] oldCards = game.cardStack.getCards().toArray(new HeimlichAndCoCard[] {});
+            List<HeimlichAndCoCard> newCards = new LinkedList<>();
+            for (HeimlichAndCoCard oldCard : oldCards) {
+                newCards.add(oldCard.clone());
+            }
+            cardStack = new CardStack<>(newCards);
         }
     }
 
@@ -298,7 +303,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
                 cards.get(currentPlayer).add(cardStack.drawCard());
             }
         }
-
 
         int result = action.applyAction(this.board);
         if (result == 1) {
