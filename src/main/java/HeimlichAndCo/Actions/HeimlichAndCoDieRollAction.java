@@ -25,6 +25,13 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         this.randomRoll = true;
     }
 
+    /**
+     * gets the possible die roll actions depending on whether custom rolls are allowed and the die faces that can be rolled
+     *
+     * @param allowCustomRoll whether custom die rolls are allowed
+     * @param dieFaces different faces that can be rolled
+     * @return Set of HeimlichAndCoActions that denote the possible actions
+     */
     public static Set<HeimlichAndCoAction> getPossibleActions(boolean allowCustomRoll, int[] dieFaces) {
         Set<HeimlichAndCoAction> possibleActions = new HashSet<HeimlichAndCoAction>();
         if (allowCustomRoll) {
@@ -61,7 +68,10 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         return 0;
     }
 
-    //returns the action for a random die Roll
+    /**
+     *
+     * @return the Actions that denotes the random roll action
+     */
     public static HeimlichAndCoDieRollAction getRandomRollAction() {
         return new HeimlichAndCoDieRollAction(true);
     }
@@ -79,10 +89,9 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         return false;
     }
 
-
     public int hashCode() {
         if (this.randomRoll) {
-            return 420;
+            return 1;
         } else {
             return this.dieRoll * 5;
         }

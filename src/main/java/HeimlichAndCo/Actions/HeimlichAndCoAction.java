@@ -12,8 +12,6 @@ public interface HeimlichAndCoAction {
      */
     int applyAction(HeimlichAndCoBoard board);
 
-    //TODO add isValidAction
-
     //implementing classes should implement toString as well!
     String toString();
 

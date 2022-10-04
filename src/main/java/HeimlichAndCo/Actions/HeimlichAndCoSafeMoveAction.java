@@ -29,7 +29,6 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
                 "move safe to " + newSafeLocation;
     }
 
-    //TODO change this for cards
     @Override
     public int applyAction(HeimlichAndCoBoard board) {
         board.moveSafe(newSafeLocation);
