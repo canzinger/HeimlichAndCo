@@ -81,7 +81,7 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof HeimlichAndCoCardAction) {
+        if (obj.getClass().equals(HeimlichAndCoCardAction.class)) {
             HeimlichAndCoCardAction toComp = (HeimlichAndCoCardAction) obj;
             if (this.isSkipCardAction() && toComp.isSkipCardAction()) {
                 return true;

@@ -136,7 +136,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     public int applyAction(HeimlichAndCoBoard board) {
         board.moveAgents(agentsMoves);
         for (Agent agent : agentsMoves.keySet()) {
-            if (agentsMoves.get(agent).equals(board.getSafePosition()) && agentsMoves.get(agent) > 0) { //this means this action triggers scoring
+            if (board.getAgentsPositions().get(agent).equals(board.getSafePosition()) && agentsMoves.get(agent) > 0) { //this means this action triggers scoring
                 return 1;
             }
         }
@@ -148,7 +148,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof HeimlichAndCoAgentMoveAction) {
+        if (obj.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
             HeimlichAndCoAgentMoveAction toComp = (HeimlichAndCoAgentMoveAction) obj;
             if (toComp.agentsMoves.size() != this.agentsMoves.size()) {
                 return false;

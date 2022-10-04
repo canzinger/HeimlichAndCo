@@ -40,7 +40,7 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof HeimlichAndCoSafeMoveAction) {
+        if (obj.getClass().equals(HeimlichAndCoSafeMoveAction.class)) {
             HeimlichAndCoSafeMoveAction toComp = (HeimlichAndCoSafeMoveAction) obj;
             return toComp.newSafeLocation == this.newSafeLocation;
         }
