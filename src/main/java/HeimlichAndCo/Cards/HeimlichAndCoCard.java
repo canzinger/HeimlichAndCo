@@ -12,6 +12,9 @@ public abstract class HeimlichAndCoCard{
     protected final HeimlichAndCoCardSpecification cardSpecification;
 
     public HeimlichAndCoCard(HeimlichAndCoCardSpecification cardSpecification) {
+        if (cardSpecification == null) {
+            throw new IllegalArgumentException("Card Specification must not be null;");
+        }
         this.cardSpecification = cardSpecification.clone();
     }
 
@@ -62,7 +65,7 @@ public abstract class HeimlichAndCoCard{
      * Giving information about how many agents or numbers are needed to apply the card.
      * @return the card specification
      */
-    HeimlichAndCoCardSpecification getCardSpecification() {
+    public final HeimlichAndCoCardSpecification getCardSpecification() {
         return cardSpecification;
     }
 
@@ -90,4 +93,5 @@ public abstract class HeimlichAndCoCard{
         return this.cardSpecification.agentsOrderInvariant;
     }
 
+    public abstract String toString();
 }

@@ -43,5 +43,7 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
         return new HeimlichAndCoMoveSafeCard(cardSpecification.clone());
     }
 
-
+    public String toString() {
+        return "MoveSafeCard: Move the safe in a building of your choice.";
+    }
 }

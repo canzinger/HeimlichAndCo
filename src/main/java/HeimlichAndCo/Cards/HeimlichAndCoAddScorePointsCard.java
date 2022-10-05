@@ -60,4 +60,8 @@ public class HeimlichAndCoAddScorePointsCard extends HeimlichAndCoCard{
     public HeimlichAndCoAddScorePointsCard clone() {
         return new HeimlichAndCoAddScorePointsCard(cardSpecification.clone());
     }
+
+    public String toString() {
+        return "AddScorePointsCard: Move two score markers forward by three points each (max. to field 40).";
+    }
 }

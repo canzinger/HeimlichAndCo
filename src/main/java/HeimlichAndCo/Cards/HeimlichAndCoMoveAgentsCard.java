@@ -89,6 +89,37 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         }
     }
 
+    public String toString() {
+        switch (super.cardSpecification.type) {
+            case 0:
+                return "Move an agent of your choice back by one or two buildings.";
+            case 1:
+                return "Move an agent of your choice backward or forward by one building.";
+            case 2:
+                return "Move two agents of your choice back by one building each.";
+            case 3:
+                return "Move two agents of your choice forward by one building each.";
+            case 4:
+                return "Move an agent that is on the safe away from the safe by one building.";
+            case 5:
+                return "Move an agent of your choice into the ruins.";
+            case 6:
+                return "Move all agents into the church.";
+            case 7:
+                return "Swap the places of two agents.";
+            case 8:
+                return "Move one agent of your choice to another one. (First player that is given is being moved)";
+            case 9:
+                return "Move one or two agents of your choice from the ruins into the church.";
+            case 10:
+                return "Move an agent one, two or three buildings forward.";
+            case 11:
+                return "Move an agent of your choice to the safe (Will trigger scoring).";
+            default:
+                throw new IllegalStateException("Invalid type for a Heimlich and Co Card");
+        }
+    }
+
     //region applyTypeX()
     private void applyType0(HeimlichAndCoBoard board, Agent agent, int number) {
         if (number == -1 || number == -2) {

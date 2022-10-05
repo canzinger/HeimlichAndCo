@@ -35,3 +35,7 @@ CardStack:
     + what to do when copying game?? cannot keep original one because of cheating
     + but should provide stack
     + --> gets card with same stack count but different cards
+
+
+Do we need a winner?? if an agent not played by anyone wins then the utility value is taken
+

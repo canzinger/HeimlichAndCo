@@ -12,6 +12,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     // maximum of 7 players (according to the real game)
     private final static int maximumNumberOfPlayers = 7;
+    private final static int minimumNumberOfPlayers = 7;
     private int currentPlayer;
     private final int numberOfPLayers;
     private final HeimlichAndCoBoard board;
@@ -53,10 +54,12 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     public HeimlichAndCo(HeimlichAndCo game, boolean stripInformation) {
         this(game.getCurrentPlayer(), game.numberOfPLayers, game.actionRecords, game.board, null, game.withCards);
         phase = game.phase;
+        currentTurnPlayer = game.currentTurnPlayer;
         playersToAgentsMap.clear();
         if (withCards) {
             cards.clear();
             cardStack = null;
+            playersSkippedInARowDuringCardPhase = game.playersSkippedInARowDuringCardPhase;
         }
 
         if (stripInformation) {
@@ -69,7 +72,9 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         } else {
             playersToAgentsMap.putAll(game.playersToAgentsMap);
             if (withCards) {
-                cards.replaceAll((p, v) -> new LinkedList<>(game.cards.get(p)));
+                for(Integer player: game.cards.keySet()) {
+                    cards.put(player, new LinkedList<>(game.cards.get(player)));
+                }
                 HeimlichAndCoCard[] oldCards = game.cardStack.getCards().toArray(new HeimlichAndCoCard[] {});
                 List<HeimlichAndCoCard> newCards = new LinkedList<>();
                 for (HeimlichAndCoCard oldCard : oldCards) {
@@ -155,7 +160,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public int getMinimumNumberOfPlayers() {
-        return 2;
+        return HeimlichAndCo.minimumNumberOfPlayers;
     }
 
     @Override
@@ -182,11 +187,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     @Override
     public double getUtilityValue(int i) {
         return board.getScores().get(playersToAgentsMap.get(i));
-    }
-
-    @Override
-    public double getHeuristicValue(int player) {
-        return Game.super.getHeuristicValue(player);
     }
 
     @Override
@@ -271,7 +271,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Number of players: ").append(numberOfPLayers).append("\n");
-        builder.append("CurrentPlayer: ").append(currentPlayer).append("\n");
+        builder.append("CurrentPlayer: ").append(currentPlayer).append(" -> Agent ").append(playersToAgentsMap.get(currentPlayer).toString()).append("\n");
         if (withCards) {
             builder.append("Playing with cards: ").append(cardStack.count()).append(" cards left on the stack").append("\n");
         } else {
@@ -296,12 +296,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (!isValidAction(action)) {
             throw new IllegalArgumentException("Invalid Action given");
         }
-        //check whether action moves agent into ruins and should therefore be awarded a card
-        if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class) && ((HeimlichAndCoAgentMoveAction) action).movesAgentsIntoRuins(this.board)) {
-            if (withCards && cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty()) { //maximum of 4 cards per player
-                cards.get(currentPlayer).add(cardStack.drawCard());
-            }
-        }
 
         int result = action.applyAction(this.board);
         if (result == 1) {
@@ -311,26 +305,34 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
         this.actionRecords.addLast(new ActionRecord<>(currentPlayer, action));
 
-        //special case where the player chose to draw a card instead of moving agents
-        if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class) && ((HeimlichAndCoAgentMoveAction) action).isNoMoveAction()) {
-            if (withCards) { //maximum of 4 cards per player
-                if (cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty()) {
+        if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
+            if (((HeimlichAndCoAgentMoveAction) action).movesAgentsIntoRuins(this.board)) { //check whether action moves agent into ruins and should therefore be awarded a card
+                if (withCards && cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty()) { //maximum of 4 cards per player
                     cards.get(currentPlayer).add(cardStack.drawCard());
                 }
-            } else {
-                throw new IllegalArgumentException("An invalid action was given when playing without cards");
+            } else if (((HeimlichAndCoAgentMoveAction) action).isNoMoveAction()) { //special case where the player chose to draw a card instead of moving agents
+                if (withCards) { //maximum of 4 cards per player
+                    if (cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty()) {
+                        cards.get(currentPlayer).add(cardStack.drawCard());
+                    }
+                } else {
+                    throw new IllegalArgumentException("An invalid action was given when playing without cards");
+                }
+            }
+        } else if (action.getClass().equals(HeimlichAndCoCardAction.class)) { //need to remove card if one played
+            ((HeimlichAndCoCardAction) action).removePlayedCardFromList(cards.get(currentPlayer));
+            if (((HeimlichAndCoCardAction) action).isSkipCardAction()) {
+                playersSkippedInARowDuringCardPhase++;
+                nextPlayer();
             }
         }
-        HeimlichAndCoPhase oldPhase = phase;
+
         phase = getNextPhase(action);
         if (phase == HeimlichAndCoPhase.SafeMovePhase) {
             currentPlayer = currentTurnPlayer;
             board.awardPoints();
         } else if (phase == HeimlichAndCoPhase.DieRollPhase) {
             turnFinished();
-        } else if (phase == HeimlichAndCoPhase.CardPlayPhase && oldPhase == HeimlichAndCoPhase.CardPlayPhase &&
-                action.getClass().equals(HeimlichAndCoCardAction.class) && ((HeimlichAndCoCardAction) action).isSkipCardAction()) {
-            currentPlayer = (currentPlayer + 1) % numberOfPLayers;
         }
     }
 
@@ -380,7 +382,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (action.getClass().equals(HeimlichAndCoCardAction.class)) {
             HeimlichAndCoCardAction cardAction = (HeimlichAndCoCardAction) action;
             if (cardAction.isSkipCardAction()) {
-                playersSkippedInARowDuringCardPhase++;
                 if (playersSkippedInARowDuringCardPhase == numberOfPLayers) {
                     if (scoreTriggered) {
                         return HeimlichAndCoPhase.SafeMovePhase;
@@ -389,6 +390,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
                     }
                 } else if (playersSkippedInARowDuringCardPhase > numberOfPLayers) {
                     throw new IllegalStateException("The game is in a state it should not be in.");
+                } else {
+                    return HeimlichAndCoPhase.CardPlayPhase;
                 }
             } else {
                 return HeimlichAndCoPhase.CardPlayPhase;
@@ -407,9 +410,13 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
 
     private void turnFinished() {
-        currentPlayer = (currentPlayer + 1) % this.numberOfPLayers;
+        nextPlayer();
         currentTurnPlayer = currentPlayer;
         playersSkippedInARowDuringCardPhase = 0;
         scoreTriggered = false;
+    }
+
+    private void nextPlayer() {
+        currentPlayer = (currentPlayer + 1) % this.numberOfPLayers;
     }
 }

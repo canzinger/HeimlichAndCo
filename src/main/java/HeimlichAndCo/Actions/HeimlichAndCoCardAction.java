@@ -5,6 +5,7 @@ import HeimlichAndCo.Cards.HeimlichAndCoCard;
 import HeimlichAndCo.HeimlichAndCoBoard;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
@@ -34,6 +35,12 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         }
         card.applyCard(board, agents, number);
         return 0; //TODO
+    }
+
+    public void removePlayedCardFromList(List<HeimlichAndCoCard> list) {
+        if (card != null) {
+            list.remove(card);
+        }
     }
 
     /**
@@ -70,6 +77,9 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
             return 67;
         }
         hashCode += number * 17;
+        if(card.getCardSpecification().agentsOrderInvariant) {
+            Arrays.sort(agents);
+        }
         for(int i = 0; i < agents.length; i++) {
             hashCode += (agents[i].ordinal() * (i + 10)) * 7;
         }
@@ -104,5 +114,25 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         } else {
             return false;
         }
+    }
+
+    public String toString() {
+        if (isSkipCardAction()) {
+            return "CardAction: skip";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("CardAction: ");
+        stringBuilder.append("Card: ").append(card.toString()).append(";");
+        if (agents != null && agents.length > 0) {
+            stringBuilder.append(" With Agents: ");
+            for (int i = 0; i < agents.length - 1; i++) {
+                stringBuilder.append(agents[i].toString()).append(", ");
+            }
+            stringBuilder.append(agents[agents.length - 1].toString()).append(";");
+        }
+        if (card.getCardSpecification().numberNeeded) {
+            stringBuilder.append(" With Number: ").append(number);
+        }
+        return stringBuilder.toString();
     }
 }
