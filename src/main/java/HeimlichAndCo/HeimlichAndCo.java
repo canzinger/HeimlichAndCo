@@ -180,13 +180,28 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     /**
      * just returns the current score of the player
+     * Exception: when the game is over, only the winning player is awarded utility, the others get 0 (because they lost)
      *
      * @param i player for which utility is wanted
      * @return utility value
      */
     @Override
     public double getUtilityValue(int i) {
-        return board.getScores().get(playersToAgentsMap.get(i));
+        if (isGameOver()) {
+            int maxScore = 0;
+            for(Agent a: board.getScores().keySet()) {
+                if (board.getScores().get(a) > maxScore) {
+                    maxScore = board.getScores().get(a);
+                }
+            }
+            if (board.getScores().get(playersToAgentsMap.get(i)) == maxScore) {
+                return maxScore;
+            } else {
+                return 0;
+            }
+        } else {
+            return board.getScores().get(playersToAgentsMap.get(i));
+        }
     }
 
     @Override
