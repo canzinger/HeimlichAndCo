@@ -30,9 +30,8 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
     }
 
     @Override
-    public int applyAction(HeimlichAndCoBoard board) {
+    public void applyAction(HeimlichAndCoBoard board) {
         board.moveSafe(newSafeLocation);
-        return 0;
     }
 
     @Override

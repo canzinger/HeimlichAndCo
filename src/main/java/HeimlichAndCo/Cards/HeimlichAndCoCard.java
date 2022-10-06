@@ -38,7 +38,6 @@ public abstract class HeimlichAndCoCard{
                 throw new IllegalArgumentException("A non playing agent was given.");
             }
         }
-
         applyCardSpecific(board, agents, number);
     }
 

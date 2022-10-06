@@ -133,14 +133,8 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     }
 
     @Override
-    public int applyAction(HeimlichAndCoBoard board) {
+    public void applyAction(HeimlichAndCoBoard board) {
         board.moveAgents(agentsMoves);
-        for (Agent agent : agentsMoves.keySet()) {
-            if (board.getAgentsPositions().get(agent).equals(board.getSafePosition()) && agentsMoves.get(agent) > 0) { //this means this action triggers scoring
-                return 1;
-            }
-        }
-        return 0;
     }
 
     @Override

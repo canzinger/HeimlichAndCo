@@ -58,14 +58,13 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
     }
 
     @Override
-    public int applyAction(HeimlichAndCoBoard board) {
+    public void applyAction(HeimlichAndCoBoard board) {
         if (!randomRoll) {
             board.setLastDieRoll(dieRoll);
         } else {
             board.rollDie();
             dieRoll = board.getLastDieRoll();
         }
-        return 0;
     }
 
     /**

@@ -29,6 +29,8 @@ public class HeimlichAndCoBoard {
     private int lastDieRoll;
     private final Die die;
 
+    private Map<Agent, Boolean> scoringTriggeredForAgent; //saves at any point in time whether scoring was triggered for an agent of not
+
     //region constructors
 
     public HeimlichAndCoBoard() {
@@ -44,6 +46,7 @@ public class HeimlichAndCoBoard {
         this.scores = getAgentMapWithZeros(agents);
         this.safePosition = 7; //the default starting position for the safe
         this.die = new Die();
+        scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap();
     }
 
     //endregion
@@ -54,8 +57,14 @@ public class HeimlichAndCoBoard {
      * @param numberOfFields number of fields the agent should be moved forward
      */
     public void moveAgent(Agent a, int numberOfFields) {
+        if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.numberOfFields != 0) {
+            scoringTriggeredForAgent.put(a, false);
+        }
         int oldPosition = agentsPositions.get(a);
         agentsPositions.replace(a, (oldPosition + numberOfFields) % HeimlichAndCoBoard.numberOfFields);
+        if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.numberOfFields != 0) {
+            scoringTriggeredForAgent.put(a, true);
+        }
     }
 
     /**
@@ -73,6 +82,9 @@ public class HeimlichAndCoBoard {
      * @param fieldId target field for safe; must be ABSOLUTE POSITION
      */
     public void moveSafe(int fieldId) {
+        if (safePosition != fieldId) {
+            scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap(); //this will always be reset when the safe is moved
+        }
         safePosition = fieldId;
     }
 
@@ -95,6 +107,7 @@ public class HeimlichAndCoBoard {
             int oldPoints = scores.get(a);
             scores.replace(a, awardedPoints + oldPoints);
         }
+        scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap();
     }
 
 
@@ -148,8 +161,8 @@ public class HeimlichAndCoBoard {
         newBoard.agentsPositions = new HashMap<>(this.agentsPositions);
         newBoard.scores = new HashMap<>(this.scores);
         System.arraycopy(this.agents, 0, newBoard.agents, 0, this.agents.length);
+        newBoard.scoringTriggeredForAgent = new HashMap<>(this.scoringTriggeredForAgent);
         return newBoard;
-        //TODO adapt to new variables in HeimlichAndCoBoard
     }
 
     @Override
@@ -372,5 +385,27 @@ public class HeimlichAndCoBoard {
     }
 
     public int getRuinsField() {return 11;}
+
+    private Map<Agent, Boolean> getNewScoringTriggeredForAgentMap() {
+        Map<Agent, Boolean> map = new HashMap<>();
+        for(Agent a: agents) {
+            scoringTriggeredForAgent.put(a, false);
+        }
+        return map;
+    }
+
+    /**
+     *
+     *
+     * @return whether scoring was triggered
+     */
+    public boolean scoringTriggered() {
+        for(Agent a: scoringTriggeredForAgent.keySet()) {
+            if (scoringTriggeredForAgent.get(a)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

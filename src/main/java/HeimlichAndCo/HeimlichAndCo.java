@@ -3,6 +3,7 @@ import HeimlichAndCo.Actions.*;
 import HeimlichAndCo.Cards.HeimlichAndCoCard;
 import HeimlichAndCo.Factories.HeimlichAndCoCardStackFactory;
 import HeimlichAndCo.Util.CardStack;
+import HeimlichAndCo.Util.ListHelpers;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
 import at.ac.tuwien.ifs.sge.game.Game;
 
@@ -22,7 +23,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     //region Turn-Variables
     private int currentTurnPlayer;
-    private boolean scoreTriggered;
     //endregion
 
     //region Variables and fields needed for Top-Secret-Variant
@@ -36,7 +36,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     //linked list is chosen for efficiency reasons,
     LinkedList<ActionRecord<HeimlichAndCoAction>> actionRecords;
 
-    private boolean allowCustomDieRolls; //TODO
+    private boolean allowCustomDieRolls;
 
     //region Constructors
 
@@ -105,7 +105,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (actionRecords == null) {
             this.actionRecords = new LinkedList<>();
         } else {
-            this.actionRecords = new LinkedList<>(actionRecords); //TODO check safety
+            this.actionRecords = ListHelpers.deepCopyActionRecordList(actionRecords);
         }
         if (board == null) {
             this.board = new HeimlichAndCoBoard(numberOfPLayers + getNumberOfDummyAgents(numberOfPLayers));
@@ -115,7 +115,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (playersToAgentsMap == null) {
             this.playersToAgentsMap = createPlayersToAgentsMap(this.numberOfPLayers);
         } else {
-            this.playersToAgentsMap = new HashMap<>(playersToAgentsMap); //TODO check safety
+            this.playersToAgentsMap = new HashMap<>(playersToAgentsMap);
         }
         this.withCards = withCards;
         if (withCards) {
@@ -132,6 +132,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             this.cardStack = null;
         }
         this.phase = HeimlichAndCoPhase.DieRollPhase;
+        this.allowCustomDieRolls = false;
     }
 
     //endregion
@@ -264,8 +265,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public List<ActionRecord<HeimlichAndCoAction>> getActionRecords() {
-        //TODO make this safe, i.e. a deep copy
-        return new LinkedList<>(actionRecords);
+        return ListHelpers.deepCopyActionRecordList(actionRecords);
     }
 
     @Override
@@ -312,12 +312,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             throw new IllegalArgumentException("Invalid Action given");
         }
 
-        int result = action.applyAction(this.board);
-        if (result == 1) {
-            scoreTriggered = true;
-        } else if (result == -1) {
-            scoreTriggered = false;
-        }
+        action.applyAction(this.board);
         this.actionRecords.addLast(new ActionRecord<>(currentPlayer, action));
 
         if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
@@ -342,7 +337,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             }
         }
 
-        phase = getNextPhase(action);
+        phase = getNextPhase(action, board.scoringTriggered());
         if (phase == HeimlichAndCoPhase.SafeMovePhase) {
             currentPlayer = currentTurnPlayer;
             board.awardPoints();
@@ -370,7 +365,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     //calculates the phase that will be (the action must already be applied!!!)
-    private HeimlichAndCoPhase getNextPhase(HeimlichAndCoAction action) {
+    private HeimlichAndCoPhase getNextPhase(HeimlichAndCoAction action, boolean scoreTriggered) {
         if (action.getClass().equals(HeimlichAndCoDieRollAction.class)) {
             if (phase == HeimlichAndCoPhase.DieRollPhase) {
                 return HeimlichAndCoPhase.AgentMovePhase;
@@ -428,10 +423,14 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         nextPlayer();
         currentTurnPlayer = currentPlayer;
         playersSkippedInARowDuringCardPhase = 0;
-        scoreTriggered = false;
+
     }
 
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % this.numberOfPLayers;
+    }
+
+    public void setAllowCustomDieRolls(boolean value) {
+        allowCustomDieRolls = value;
     }
 }

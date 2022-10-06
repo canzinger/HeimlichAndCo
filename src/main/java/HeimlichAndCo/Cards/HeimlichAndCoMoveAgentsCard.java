@@ -54,6 +54,8 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
             case 11:
                 applyType11(board, agents[0]);
                 break;
+            default:
+                throw new IllegalStateException("Invalid type for a Heimlich and Co Card");
         }
     }
 

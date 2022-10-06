@@ -16,7 +16,7 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
 
     public HeimlichAndCoCardAction(HeimlichAndCoCard card, Agent[] agents, int number) {
         if (card != null) {
-            this.card = card; //TODO clone
+            this.card = card.clone();
         } else {
             this.card = null;
         }
@@ -29,12 +29,10 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
     }
 
     @Override
-    public int applyAction(HeimlichAndCoBoard board) {
-        if (card == null) {
-            return 0;
+    public void applyAction(HeimlichAndCoBoard board) {
+        if (card != null) {
+            card.applyCard(board, agents, number);
         }
-        card.applyCard(board, agents, number);
-        return 0; //TODO
     }
 
     public void removePlayedCardFromList(List<HeimlichAndCoCard> list) {
