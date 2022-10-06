@@ -19,4 +19,6 @@ public interface HeimlichAndCoAction {
     boolean equals(Object obj);
 
     int hashCode();
+
+    public HeimlichAndCoAction clone();
 }

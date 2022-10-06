@@ -187,4 +187,8 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         }
         return false;
     }
+
+    public HeimlichAndCoAgentMoveAction clone() {
+        return new HeimlichAndCoAgentMoveAction(this.agentsMoves);
+    }
 }

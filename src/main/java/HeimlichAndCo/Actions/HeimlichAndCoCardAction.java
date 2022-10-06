@@ -135,4 +135,8 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         }
         return stringBuilder.toString();
     }
+
+    public HeimlichAndCoCardAction clone() {
+        return new HeimlichAndCoCardAction(this.card.clone(), agents, number);
+    }
 }

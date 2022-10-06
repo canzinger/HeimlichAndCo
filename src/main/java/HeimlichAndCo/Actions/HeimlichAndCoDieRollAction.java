@@ -97,4 +97,12 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         }
     }
 
+    public HeimlichAndCoDieRollAction clone() {
+        if (randomRoll) {
+            return new HeimlichAndCoDieRollAction(true);
+        } else {
+            return new HeimlichAndCoDieRollAction(dieRoll);
+        }
+    }
+
 }

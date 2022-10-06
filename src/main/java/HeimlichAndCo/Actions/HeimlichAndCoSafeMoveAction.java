@@ -51,4 +51,8 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
     public int hashCode() {
         return newSafeLocation;
     }
+
+    public HeimlichAndCoSafeMoveAction clone() {
+        return new HeimlichAndCoSafeMoveAction(newSafeLocation);
+    }
 }
