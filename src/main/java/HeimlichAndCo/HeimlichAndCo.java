@@ -2,6 +2,8 @@ package HeimlichAndCo;
 
 import HeimlichAndCo.Actions.*;
 import HeimlichAndCo.Cards.HeimlichAndCoCard;
+import HeimlichAndCo.Enums.Agent;
+import HeimlichAndCo.Enums.HeimlichAndCoPhase;
 import HeimlichAndCo.Factories.HeimlichAndCoCardStackFactory;
 import HeimlichAndCo.Util.CardStack;
 import HeimlichAndCo.Util.ListHelpers;

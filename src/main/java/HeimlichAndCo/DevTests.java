@@ -2,6 +2,7 @@ package HeimlichAndCo;
 
 import HeimlichAndCo.Actions.HeimlichAndCoAction;
 import HeimlichAndCo.Actions.HeimlichAndCoDieRollAction;
+import HeimlichAndCo.Enums.Agent;
 
 public class DevTests {
     public static void main(String[] args) {

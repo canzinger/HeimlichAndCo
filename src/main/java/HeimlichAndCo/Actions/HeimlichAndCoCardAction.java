@@ -1,6 +1,6 @@
 package HeimlichAndCo.Actions;
 
-import HeimlichAndCo.Agent;
+import HeimlichAndCo.Enums.Agent;
 import HeimlichAndCo.Cards.HeimlichAndCoCard;
 import HeimlichAndCo.HeimlichAndCoBoard;
 

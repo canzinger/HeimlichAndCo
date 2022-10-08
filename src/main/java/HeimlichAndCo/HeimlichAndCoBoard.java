@@ -1,5 +1,6 @@
 package HeimlichAndCo;
 
+import HeimlichAndCo.Enums.Agent;
 import HeimlichAndCo.Util.Die;
 
 import java.util.*;
