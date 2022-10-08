@@ -3,10 +3,7 @@ package HeimlichAndCo;
 import HeimlichAndCo.Cards.HeimlichAndCoCard;
 import HeimlichAndCo.Util.Die;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HeimlichAndCoBoard {
 
@@ -63,6 +60,22 @@ public class HeimlichAndCoBoard {
         int oldPosition = agentsPositions.get(a);
         agentsPositions.replace(a, (oldPosition + numberOfFields) % HeimlichAndCoBoard.numberOfFields);
         if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.numberOfFields != 0) {
+            scoringTriggeredForAgent.put(a, true);
+        }
+    }
+
+    /**
+     * moves an agent to a specific field
+     *
+     * @param a Agent to be moved
+     * @param building the building/field id of the building the agent should be moved into
+     */
+    public void moveAgentToAbsoluteBuilding(Agent a, int building) {
+        if (agentsPositions.get(a) == safePosition && building != agentsPositions.get(a)) {
+            scoringTriggeredForAgent.put(a, false);
+        }
+        agentsPositions.replace(a, building);
+        if (agentsPositions.get(a) == safePosition && building != agentsPositions.get(a)) {
             scoringTriggeredForAgent.put(a, true);
         }
     }
@@ -365,7 +378,7 @@ public class HeimlichAndCoBoard {
     }
 
     public Map<Agent, Integer> getAgentsPositions() {
-        return agentsPositions;
+        return Collections.unmodifiableMap(agentsPositions);
     }
 
     public int getLastDieRoll() {
@@ -389,7 +402,7 @@ public class HeimlichAndCoBoard {
     private Map<Agent, Boolean> getNewScoringTriggeredForAgentMap() {
         Map<Agent, Boolean> map = new HashMap<>();
         for(Agent a: agents) {
-            scoringTriggeredForAgent.put(a, false);
+            map.put(a, false);
         }
         return map;
     }

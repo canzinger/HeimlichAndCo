@@ -161,13 +161,13 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
     }
 
     private void applyType5(HeimlichAndCoBoard board, Agent agent) {
-        board.getAgentsPositions().replace(agent, 11);
+        board.moveAgentToAbsoluteBuilding(agent, 11);
     }
 
     private void applyType6(HeimlichAndCoBoard board) {
-        Map<Agent, Integer> positions = board.getAgentsPositions();
-        for(Agent a: positions.keySet()) {
-            positions.replace(a, 0);
+        Agent[] agents = board.getAgents();
+        for(Agent a: agents) {
+            board.moveAgentToAbsoluteBuilding(a, 0);
         }
     }
 
@@ -175,13 +175,12 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         Map<Agent, Integer> positions = board.getAgentsPositions();
         int oldPosition0 = positions.get(agents[0]);
         int oldPosition1 = positions.get(agents[1]);
-        positions.replace(agents[0], oldPosition1);
-        positions.replace(agents[1], oldPosition0);
+        board.moveAgentToAbsoluteBuilding(agents[0], oldPosition1);
+        board.moveAgentToAbsoluteBuilding(agents[1], oldPosition0);
     }
 
     private void applyType8(HeimlichAndCoBoard board, Agent[] agents) {
-        Map<Agent, Integer> positions = board.getAgentsPositions();
-        positions.replace(agents[0], positions.get(agents[1]));
+        board.moveAgentToAbsoluteBuilding(agents[0], board.getAgentsPositions().get(agents[1]));
     }
 
     private void applyType9(HeimlichAndCoBoard board, Agent[] agents) {
@@ -192,7 +191,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
             }
         }
         for (Agent a:agents) {
-            positions.replace(a, 0);
+            board.moveAgentToAbsoluteBuilding(a, 0);
         }
     }
 
@@ -204,7 +203,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
     }
 
     private void applyType11(HeimlichAndCoBoard board, Agent agent) {
-        board.getAgentsPositions().replace(agent, board.getSafePosition());
+        board.moveAgentToAbsoluteBuilding(agent, board.getSafePosition());
     }
 
     //endregion

@@ -13,7 +13,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     // maximum of 7 players (according to the real game)
     private final static int maximumNumberOfPlayers = 7;
-    private final static int minimumNumberOfPlayers = 7;
+    private final static int minimumNumberOfPlayers = 2;
     private int currentPlayer;
     private final int numberOfPLayers;
     private final HeimlichAndCoBoard board;
