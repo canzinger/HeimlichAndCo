@@ -19,7 +19,6 @@ public class HeimlichAndCoBoardTests {
         Assertions.assertEquals(board.getAgents().length, board.getAgentsPositions().keySet().size());
         Assertions.assertNotNull(board.getScores());
         Assertions.assertEquals(board.getAgents().length, board.getScores().keySet().size());
-        Assertions.assertNotNull(board.getDie());
     }
 
     @Test
@@ -30,7 +29,6 @@ public class HeimlichAndCoBoardTests {
         Assertions.assertEquals(board.getAgents().length, board.getAgentsPositions().keySet().size());
         Assertions.assertNotNull(board.getScores());
         Assertions.assertEquals(board.getAgents().length, board.getScores().keySet().size());
-        Assertions.assertNotNull(board.getDie());
     }
 
     @Test

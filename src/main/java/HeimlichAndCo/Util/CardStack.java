@@ -1,8 +1,10 @@
 package HeimlichAndCo.Util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class CardStack<T>{
+public class CardStack<T> {
 
     private final List<T> cards;
 
@@ -10,8 +12,8 @@ public class CardStack<T>{
         this.cards = new ArrayList<>(cards);
     }
 
-    public void shuffle() {
-        Collections.shuffle(cards);
+    public int count() {
+        return cards.size();
     }
 
     public T drawCard() {
@@ -23,13 +25,15 @@ public class CardStack<T>{
         return returnCard;
     }
 
-    public boolean isEmpty() {
-        return cards.size() == 0;
+    public void shuffle() {
+        Collections.shuffle(cards);
     }
-
-    public int count() {return cards.size();}
 
     public List<T> getCards() {
         return cards;
+    }
+
+    public boolean isEmpty() {
+        return cards.size() == 0;
     }
 }

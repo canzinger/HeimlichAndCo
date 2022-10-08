@@ -11,13 +11,13 @@ public interface HeimlichAndCoAction {
      */
     void applyAction(HeimlichAndCoBoard board);
 
-    //implementing classes should implement toString as well!
-    String toString();
+    HeimlichAndCoAction clone();
 
     //as well as .equals()
     boolean equals(Object obj);
 
     int hashCode();
 
-    public HeimlichAndCoAction clone();
+    //implementing classes should implement toString as well!
+    String toString();
 }

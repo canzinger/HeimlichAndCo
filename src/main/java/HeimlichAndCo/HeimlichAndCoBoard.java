@@ -1,6 +1,5 @@
 package HeimlichAndCo;
 
-import HeimlichAndCo.Cards.HeimlichAndCoCard;
 import HeimlichAndCo.Util.Die;
 
 import java.util.*;
@@ -8,37 +7,61 @@ import java.util.*;
 public class HeimlichAndCoBoard {
 
     /**
-     * saves which agents are in play
+     * the number of fields of the board
+     */
+    private final static int NUMBER_OF_FIELDS = 12;
+    /**
+     * saves which agents are in play.
      */
     private final Agent[] agents;
-
+    private final Die die;
     /**
-     * saves the positions of each agent
+     * saves the positions of each agent.
      */
     private Map<Agent, Integer> agentsPositions; //must have an entry for all playing agents
-
     /**
-     * saves the current points of each agent
+     * saves the current points of each agent.
      */
     private Map<Agent, Integer> scores; //must have an entry for all playing agents
     private int safePosition;
-    private final static int numberOfFields = 12;
+    /**
+     * saves the last result of a die roll.
+     */
     private int lastDieRoll;
-    private final Die die;
-
-    private Map<Agent, Boolean> scoringTriggeredForAgent; //saves at any point in time whether scoring was triggered for an agent of not
+    /**
+     * Saves at any point in time whether scoring was triggered for an agent or not.
+     * will become true for an agent when it is moved onto the safe and will become false for an agent when it is moved off the safe or the safe is moved
+     */
+    private Map<Agent, Boolean> scoringTriggeredForAgent;
 
     //region constructors
 
+    /**
+     * Creates a new board instance with 7 agents
+     */
     public HeimlichAndCoBoard() {
         this(7);
     }
 
+    /**
+     * Creates a new board instance with the given number of agents
+     *
+     * @param numberOfAgents amount of agents that are playing (must be between 5 and 7)
+     */
     public HeimlichAndCoBoard(int numberOfAgents) {
-        if (numberOfAgents < 5 || numberOfAgents > 7) {
+        this(HeimlichAndCoBoard.getParticipatingAgents(numberOfAgents));
+    }
+
+    /**
+     * Creates a new board instance with the given agents.
+     *
+     * @param agents Agents which are playing
+     */
+    public HeimlichAndCoBoard(Agent[] agents) {
+        if (agents == null || agents.length < 5 || agents.length > 7) {
             throw new IllegalArgumentException("Invalid amount of playing agents, must be between 5 and 7");
         }
-        this.agents = getParticipatingAgents(numberOfAgents);
+        this.agents = Arrays.copyOf(agents, agents.length);
         this.agentsPositions = getAgentMapWithZeros(agents);
         this.scores = getAgentMapWithZeros(agents);
         this.safePosition = 7; //the default starting position for the safe
@@ -46,72 +69,55 @@ public class HeimlichAndCoBoard {
         scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap();
     }
 
+    /**
+     * Creates a new board instance with the given agents positions (must be non-null).
+     * Optional parameter scores allows to set the scores for the agents to different values.
+     * AgentsPositions and Scores must have the same key set (i.e. same agents present as keys).
+     * Method should act as helper for testing agents/the game.
+     *
+     * @param agentsPositions starting positions for all playing agents (must have between 5 and 7 entries)
+     * @param scores          starting scores for all playing agents (OPTIONAL) (must have between 5 and 7 entries if given)
+     */
+    public HeimlichAndCoBoard(Map<Agent, Integer> agentsPositions, Map<Agent, Integer> scores) {
+        if (agentsPositions.size() < 5 || agentsPositions.size() > 7) {
+            throw new IllegalArgumentException("Invalid amount of playing agents, must be between 5 and 7");
+        }
+        this.agents = agentsPositions.keySet().toArray(new Agent[0]);
+        this.agentsPositions = new HashMap<>(agentsPositions);
+        if (scores != null && scores.size() != 0) {
+            if (!agentsPositions.keySet().equals(scores.keySet())) {
+                throw new IllegalArgumentException("Scores and agentsPositions must have the same key set");
+            }
+            this.scores = new HashMap<>(scores);
+        }
+        this.safePosition = 7;
+        this.die = new Die();
+        scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap();
+    }
+
     //endregion
 
     /**
-     * moves an agent forward a certain number of fields
-     * @param a Agent to be moved
-     * @param numberOfFields number of fields the agent should be moved forward
-     */
-    public void moveAgent(Agent a, int numberOfFields) {
-        if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.numberOfFields != 0) {
-            scoringTriggeredForAgent.put(a, false);
-        }
-        int oldPosition = agentsPositions.get(a);
-        agentsPositions.replace(a, (oldPosition + numberOfFields) % HeimlichAndCoBoard.numberOfFields);
-        if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.numberOfFields != 0) {
-            scoringTriggeredForAgent.put(a, true);
-        }
-    }
-
-    /**
-     * moves an agent to a specific field
+     * Calculates for each field which agents are on it.
      *
-     * @param a Agent to be moved
-     * @param building the building/field id of the building the agent should be moved into
+     * @return A map with entries for each field and a corresponding array giving the agents on the given field
      */
-    public void moveAgentToAbsoluteBuilding(Agent a, int building) {
-        if (agentsPositions.get(a) == safePosition && building != agentsPositions.get(a)) {
-            scoringTriggeredForAgent.put(a, false);
+    public Map<Integer, Agent[]> agentsOnFields() {
+        Map<Integer, Agent[]> agentsMap = new HashMap<>();
+        for (int i = 0; i < NUMBER_OF_FIELDS; i++) {
+            List<Agent> agents = new LinkedList<>();
+            for (Agent a : this.agents) {
+                if (agentsPositions.get(a) == i) {
+                    agents.add(a);
+                }
+            }
+            agentsMap.put(i, agents.toArray(new Agent[0]));
         }
-        agentsPositions.replace(a, building);
-        if (agentsPositions.get(a) == safePosition && building != agentsPositions.get(a)) {
-            scoringTriggeredForAgent.put(a, true);
-        }
+        return agentsMap;
     }
 
     /**
-     * moves multiple agents by certain number of fields
-     * @param agentsMoves Map denoting the amount of fields certain agents should move forward
-     */
-    public void moveAgents(Map<Agent, Integer> agentsMoves) {
-        for(Agent a: agentsMoves.keySet()) {
-            moveAgent(a, agentsMoves.get(a));
-        }
-    }
-
-    /**
-     * moves to safe to a given field
-     * @param fieldId target field for safe; must be ABSOLUTE POSITION
-     */
-    public void moveSafe(int fieldId) {
-        if (safePosition != fieldId) {
-            scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap(); //this will always be reset when the safe is moved
-        }
-        safePosition = fieldId;
-    }
-
-    /**
-     * gives back the score Map
-     * note that this is safe, as the player agents never have access to the real Board
-     * @return Hashmap containing the current scores for each agent
-     */
-    public Map<Agent, Integer> getScores() {
-        return scores;
-    }
-
-    /**
-     * awards all playings agents points according to their position on the board
+     * Awards all playings agents points according to their position on the board.
      */
     public void awardPoints() {
         for (Agent a : this.agents) {
@@ -123,9 +129,20 @@ public class HeimlichAndCoBoard {
         scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap();
     }
 
+    @Override
+    public HeimlichAndCoBoard clone() {
+        HeimlichAndCoBoard newBoard = new HeimlichAndCoBoard(this.agents);
+        newBoard.lastDieRoll = this.lastDieRoll;
+        newBoard.safePosition = this.safePosition;
+        newBoard.agentsPositions = new HashMap<>(this.agentsPositions);
+        newBoard.scores = new HashMap<>(this.scores);
+        System.arraycopy(this.agents, 0, newBoard.agents, 0, this.agents.length);
+        newBoard.scoringTriggeredForAgent = new HashMap<>(this.scoringTriggeredForAgent);
+        return newBoard;
+    }
 
     /**
-     * determines the amounts of points an agent should receive based on the field they are on
+     * Determines the amounts of points an agent should receive based on the field they are on.
      *
      * @param fieldId field in question
      * @return points that would be awarded
@@ -142,44 +159,88 @@ public class HeimlichAndCoBoard {
     }
 
     /**
+     * Moves an agent a certain number of fields/buildings.
      *
-     * @param number number of participating agents
-     * @return Agent array with the participating agents
+     * @param a              Agent to be moved
+     * @param numberOfFields Number of fields the agent should be moved
      */
-    private Agent[] getParticipatingAgents(int number) {
-        Agent[] totalAgents = Agent.values();
-        Agent[] participatingAgents = new Agent[number];
-        System.arraycopy(totalAgents, 0, participatingAgents, 0, number);
-        return participatingAgents;
+    public void moveAgent(Agent a, int numberOfFields) {
+        if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.NUMBER_OF_FIELDS != 0) {
+            scoringTriggeredForAgent.put(a, false);
+        }
+        agentsPositions.replace(a, (agentsPositions.get(a) + numberOfFields) % HeimlichAndCoBoard.NUMBER_OF_FIELDS);
+        if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.NUMBER_OF_FIELDS != 0) {
+            scoringTriggeredForAgent.put(a, true);
+        }
     }
 
     /**
+     * Moves an agent to a specific field/building.
      *
-     * @param agents array of participating agents
-     * @return Map with an entry of 0 for each agent
+     * @param a          Agent to be moved
+     * @param buildingId The building/field id of where the agent should be moved to
      */
-    private Map<Agent, Integer> getAgentMapWithZeros(Agent[] agents) {
-        Map<Agent, Integer> map = new HashMap<Agent, Integer>();
-        for (Agent a: agents) {
-            map.put(a, 0);
+    public void moveAgentToAbsoluteBuilding(Agent a, int buildingId) {
+        if (buildingId < 0 || buildingId >= NUMBER_OF_FIELDS) {
+            throw new IllegalArgumentException("Invalid buildingId.");
         }
-        return map;
+        if (agentsPositions.get(a) == safePosition && buildingId != agentsPositions.get(a)) {
+            scoringTriggeredForAgent.put(a, false);
+        }
+        agentsPositions.replace(a, buildingId);
+        if (agentsPositions.get(a) == safePosition && buildingId != agentsPositions.get(a)) {
+            scoringTriggeredForAgent.put(a, true);
+        }
+    }
+
+    /**
+     * Moves multiple agents by a certain number of fields.
+     *
+     * @param agentsMoves Map denoting the amount of fields certain agents should be moved
+     */
+    public void moveAgents(Map<Agent, Integer> agentsMoves) {
+        for (Agent a : agentsMoves.keySet()) {
+            moveAgent(a, agentsMoves.get(a));
+        }
+    }
+
+    /**
+     * Moves safe to a given building
+     *
+     * @param buildingId Target building for safe (ABSOLUTE POSITION)
+     */
+    public void moveSafe(int buildingId) {
+        if (buildingId < 0 || buildingId >= NUMBER_OF_FIELDS) {
+            throw new IllegalArgumentException("Invalid buildingId.");
+        }
+        if (safePosition != buildingId) {
+            scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap(); //this will always be reset when the safe is moved
+        }
+        safePosition = buildingId;
+    }
+
+    /**
+     * Rolls the die and therefore sets the result of the last die roll.
+     */
+    public void rollDie() {
+        this.lastDieRoll = die.roll();
+    }
+
+    /**
+     * Returns true if points should be awarded.
+     *
+     * @return whether scoring was triggered
+     */
+    public boolean scoringTriggered() {
+        for (Agent a : scoringTriggeredForAgent.keySet()) {
+            if (scoringTriggeredForAgent.get(a)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public HeimlichAndCoBoard clone() {
-        HeimlichAndCoBoard newBoard = new HeimlichAndCoBoard(this.agents.length);
-        newBoard.lastDieRoll = this.lastDieRoll;
-        newBoard.safePosition = this.safePosition;
-        newBoard.agentsPositions = new HashMap<>(this.agentsPositions);
-        newBoard.scores = new HashMap<>(this.scores);
-        System.arraycopy(this.agents, 0, newBoard.agents, 0, this.agents.length);
-        newBoard.scoringTriggeredForAgent = new HashMap<>(this.scoringTriggeredForAgent);
-        return newBoard;
-    }
-
-    @Override
-    //TODO make nicer
     public String toString() {
         Map<Integer, Agent[]> agentsOnField = agentsOnFields();
         StringBuilder stringBuilder = new StringBuilder();
@@ -216,7 +277,7 @@ public class HeimlichAndCoBoard {
         }
         stringBuilder.append("\n");
         stringBuilder.append("    ");
-        for(int i = 1; i < 6; i++) {
+        for (int i = 1; i < 6; i++) {
             if (safePosition == i) {
                 stringBuilder.append("|__[$]__| ");
             } else {
@@ -316,7 +377,7 @@ public class HeimlichAndCoBoard {
         }
         stringBuilder.append("\n");
         stringBuilder.append("    ");
-        for(int i = 11; i > 6; i--) {
+        for (int i = 11; i > 6; i--) {
             if (safePosition == i) {
                 stringBuilder.append("|__[$]__| ");
             } else {
@@ -325,11 +386,9 @@ public class HeimlichAndCoBoard {
         }
         stringBuilder.append("\n");
 
-
-
         //printing the points for each agent
         stringBuilder.append("Points:\n");
-        for (Agent a: agents) {
+        for (Agent a : agents) {
             stringBuilder.append(a.toString()).append(": ").append(scores.get(a)).append("\n");
         }
         if (lastDieRoll != 0) {
@@ -339,25 +398,95 @@ public class HeimlichAndCoBoard {
     }
 
     /**
-     * gives back the Agents on certain fields
-     * @return a map with entries for each field and a corresponding array giving the agents in the given field
+     * Returns the agents playing on the board.
      */
-    public Map<Integer, Agent[]> agentsOnFields() {
-        Map<Integer, Agent[]> agentsMap = new HashMap<>();
-        for (int i = 0; i < numberOfFields; i++) {
-            List<Agent> agents = new LinkedList<>();
-            for (Agent a: this.agents) {
-                if (agentsPositions.get(a) == i) {
-                    agents.add(a);
-                }
-            }
-            agentsMap.put(i, agents.toArray(new Agent[0]));
-        }
-        return agentsMap;
+    public Agent[] getAgents() {
+        return Arrays.copyOf(agents, agents.length);
     }
 
+    /**
+     * Returns a map containing the position for each agent. Unmodifiable as agents should only be moved with the given board methods.
+     *
+     * @return unmodifiableMap of the agents positions
+     */
+    public Map<Agent, Integer> getAgentsPositions() {
+        return Collections.unmodifiableMap(agentsPositions);
+    }
+
+    /**
+     * Returns the possible outcomes of the die associated with this board
+     *
+     * @return array with the possible outcomes of a die roll
+     */
+    public int[] getDieFaces() {
+        return Arrays.copyOf(die.getFaces(), die.getFaces().length);
+    }
+
+    /**
+     * Returns the result of the last die roll.
+     */
+    public int getLastDieRoll() {
+        return lastDieRoll;
+    }
+
+    /**
+     * Sets the "result" of the last die roll to a given number.
+     *
+     * @param lastDieRoll the desired simulated outcome of the die roll
+     */
+    public void setLastDieRoll(int lastDieRoll) {
+        this.lastDieRoll = lastDieRoll;
+    }
+
+    /**
+     * Helper method to get a new Map<Agent, Boolean> with false entries for each playing agent
+     *
+     * @return method with an entry for each playing agent with value false
+     */
+    private Map<Agent, Boolean> getNewScoringTriggeredForAgentMap() {
+        Map<Agent, Boolean> map = new HashMap<>();
+        for (Agent a : agents) {
+            map.put(a, false);
+        }
+        return map;
+    }
+
+    /**
+     * Returns the number of fields/buildings on the board.
+     */
+    public int getNumberOfFields() {
+        return NUMBER_OF_FIELDS;
+    }
+
+    /**
+     * Returns the fieldId of the ruins
+     *
+     * @return the fieldId of the ruins
+     */
+    public int getRuinsField() {
+        return 11;
+    }
+
+    public int getSafePosition() {
+        return safePosition;
+    }
+
+    /**
+     * Returns a Map depicting the scores of the playing agents
+     *
+     * @return Map containing the current scores for each agent
+     */
+    public Map<Agent, Integer> getScores() {
+        return scores;
+    }
+
+    /**
+     * Returns whether the game is over, i.e. if one player has at least 42 points.
+     *
+     * @return whether game is over
+     */
     public boolean isGameOver() {
-        for(Agent a: agents) {
+        for (Agent a : agents) {
             if (scores.get(a) >= 42) {
                 return true;
             }
@@ -365,60 +494,31 @@ public class HeimlichAndCoBoard {
         return false;
     }
 
-    public Agent[] getAgents() {
-        return agents;
-    }
-
-    public int getSafePosition() {
-        return safePosition;
-    }
-
-    public int getNumberOfFields() {
-        return numberOfFields;
-    }
-
-    public Map<Agent, Integer> getAgentsPositions() {
-        return Collections.unmodifiableMap(agentsPositions);
-    }
-
-    public int getLastDieRoll() {
-        return lastDieRoll;
-    }
-
-    public void setLastDieRoll(int lastDieRoll) {
-        this.lastDieRoll = lastDieRoll;
-    }
-
-    public void rollDie() {
-        this.lastDieRoll = die.roll();
-    }
-
-    public Die getDie() {
-        return die;
-    }
-
-    public int getRuinsField() {return 11;}
-
-    private Map<Agent, Boolean> getNewScoringTriggeredForAgentMap() {
-        Map<Agent, Boolean> map = new HashMap<>();
-        for(Agent a: agents) {
-            map.put(a, false);
+    /**
+     * Creates a map with the given agents with entries of value 0.
+     *
+     * @param agents array of agents
+     * @return Map with an entry of 0 for each agent
+     */
+    private Map<Agent, Integer> getAgentMapWithZeros(Agent[] agents) {
+        Map<Agent, Integer> map = new HashMap<>();
+        for (Agent a : agents) {
+            map.put(a, 0);
         }
         return map;
     }
 
     /**
+     * Returns which agents are playing depending on the number of agents.
      *
-     *
-     * @return whether scoring was triggered
+     * @param number number of participating agents
+     * @return Agent array with the participating agents
      */
-    public boolean scoringTriggered() {
-        for(Agent a: scoringTriggeredForAgent.keySet()) {
-            if (scoringTriggeredForAgent.get(a)) {
-                return true;
-            }
-        }
-        return false;
+    private static Agent[] getParticipatingAgents(int number) {
+        Agent[] totalAgents = Agent.values();
+        Agent[] participatingAgents = new Agent[number];
+        System.arraycopy(totalAgents, 0, participatingAgents, 0, number);
+        return participatingAgents;
     }
 }
 

@@ -23,9 +23,27 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         if (agents != null) {
             this.agents = Arrays.copyOf(agents, agents.length);
         } else {
-            this.agents = new Agent[] {};
+            this.agents = new Agent[]{};
         }
         this.number = number;
+    }
+
+    /**
+     * calculates all possible actions for a board and a given card
+     *
+     * @param board current board
+     * @param card  the card for which actions should be calculated
+     * @return Set of HeimlichAndCoCardActions with possible actions
+     */
+    public static Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board, HeimlichAndCoCard card) {
+        return card.getPossibleActions(board);
+    }
+
+    /**
+     * @return the Action that denotes that the player does not want/can play a card
+     */
+    public static HeimlichAndCoCardAction getSkipCardAction() {
+        return new HeimlichAndCoCardAction(null, null, 0);
     }
 
     @Override
@@ -35,53 +53,13 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         }
     }
 
-    public void removePlayedCardFromList(List<HeimlichAndCoCard> list) {
+    public HeimlichAndCoCardAction clone() {
         if (card != null) {
-            list.remove(card);
-        }
-    }
-
-    /**
-     * calculates all possible actions for a board and a given card
-     *
-     * @param board current board
-     * @param card the card for which actions should be calculated
-     * @return Set of HeimlichAndCoCardActions with possible actions
-     */
-    public static Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board, HeimlichAndCoCard card) {
-        return card.getPossibleActions(board);
-    }
-
-    /**
-     *
-     * @return the Action that denotes that the player does not want/can play a card
-     */
-    public static HeimlichAndCoCardAction getSkipCardAction() {return new HeimlichAndCoCardAction(null, null, 0);}
-
-    /**
-     *
-     * @return whether the Action is the Skip Action
-     */
-    public boolean isSkipCardAction() {
-        return card == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int hashCode = 0;
-        if (card != null) {
-            hashCode += card.hashCode() * 11;
+            return new HeimlichAndCoCardAction(this.card.clone(), agents, number);
         } else {
-            return 67;
+            return new HeimlichAndCoCardAction(null, agents, number);
         }
-        hashCode += number * 17;
-        if(card.getCardSpecification().agentsOrderInvariant) {
-            Arrays.sort(agents);
-        }
-        for(int i = 0; i < agents.length; i++) {
-            hashCode += (agents[i].ordinal() * (i + 10)) * 7;
-        }
-        return hashCode;
+
     }
 
     @Override
@@ -114,6 +92,30 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         }
     }
 
+    @Override
+    public int hashCode() {
+        int hashCode = 0;
+        if (card != null) {
+            hashCode += card.hashCode() * 11;
+        } else {
+            return 67;
+        }
+        hashCode += number * 17;
+        if (card.getCardSpecification().agentsOrderInvariant) {
+            Arrays.sort(agents);
+        }
+        for (int i = 0; i < agents.length; i++) {
+            hashCode += (agents[i].ordinal() * (i + 10)) * 7;
+        }
+        return hashCode;
+    }
+
+    public void removePlayedCardFromList(List<HeimlichAndCoCard> list) {
+        if (card != null) {
+            list.remove(card);
+        }
+    }
+
     public String toString() {
         if (isSkipCardAction()) {
             return "CardAction: skip";
@@ -134,12 +136,10 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         return stringBuilder.toString();
     }
 
-    public HeimlichAndCoCardAction clone() {
-        if (card != null) {
-            return new HeimlichAndCoCardAction(this.card.clone(), agents, number);
-        } else {
-            return new HeimlichAndCoCardAction(null, agents, number);
-        }
-
+    /**
+     * @return whether the Action is the Skip Action
+     */
+    public boolean isSkipCardAction() {
+        return card == null;
     }
 }

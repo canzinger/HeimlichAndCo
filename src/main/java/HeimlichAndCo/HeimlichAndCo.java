@@ -1,4 +1,5 @@
 package HeimlichAndCo;
+
 import HeimlichAndCo.Actions.*;
 import HeimlichAndCo.Cards.HeimlichAndCoCard;
 import HeimlichAndCo.Factories.HeimlichAndCoCardStackFactory;
@@ -9,39 +10,32 @@ import at.ac.tuwien.ifs.sge.game.Game;
 
 import java.util.*;
 
-public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoard>{
+public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoard> {
 
-    // maximum of 7 players (according to the real game)
-    private final static int maximumNumberOfPlayers = 7;
-    private final static int minimumNumberOfPlayers = 2;
-    private int currentPlayer;
+    private final static int MAXIMUM_NUMBER_OF_PLAYERS = 7;
+    private final static int MINIMUM_NUMBER_OF_PLAYERS = 2;
     private final int numberOfPLayers;
     private final HeimlichAndCoBoard board;
     // map which saves which player is assigned to which Agent (SECRET!)
     private final Map<Integer, Agent> playersToAgentsMap;
-    private HeimlichAndCoPhase phase;
-
-    //region Turn-Variables
-    private int currentTurnPlayer;
-    //endregion
-
     //region Variables and fields needed for Top-Secret-Variant
     private final boolean withCards;
     private final Map<Integer, List<HeimlichAndCoCard>> cards; //cards are assigned to players not agents
-    private CardStack<HeimlichAndCoCard> cardStack;
-    private int playersSkippedInARowDuringCardPhase;
-    //endregion
-
-
     //linked list is chosen for efficiency reasons,
     LinkedList<ActionRecord<HeimlichAndCoAction>> actionRecords;
-
+    private int currentPlayer;
+    private HeimlichAndCoPhase phase;
+    private int currentTurnPlayer; //saves the whose turn it is; note that this might be different from the current player when playing with cards
+    private CardStack<HeimlichAndCoCard> cardStack;
+    //endregion
+    private int playersSkippedInARowDuringCardPhase;
+    //whether to allow users to submit custom die Roll Actions
     private boolean allowCustomDieRolls;
 
     //region Constructors
 
     public HeimlichAndCo() {
-        this(0, HeimlichAndCo.maximumNumberOfPlayers, null, null, null, false);
+        this(0, HeimlichAndCo.MAXIMUM_NUMBER_OF_PLAYERS, null, null, null, false);
     }
 
     public HeimlichAndCo(int numberOfPLayers) {
@@ -51,6 +45,15 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     //information that should not be public is stripped, there is only one thing, that is the map that maps the players to their agents
     // there might be some functions which do not work for the game with stripped information
     // an agent can find out which player belongs to him by using the playersToAgentsMap with only one entry
+
+    /**
+     * Copies values from the given game into a new game object. Possible to either strip the new game of private information or not.
+     * Therefore, this can be used to create a copy for a certain player which only contains information for the given player.
+     * If information is stripped, the only information that will remain is that for the CURRENT PLAYER.
+     *
+     * @param game             the game which acts as the basis for the new game
+     * @param stripInformation whether to strip non-public information from the new game
+     */
     public HeimlichAndCo(HeimlichAndCo game, boolean stripInformation) {
         this(game.getCurrentPlayer(), game.numberOfPLayers, game.actionRecords, game.board, null, game.withCards);
         phase = game.phase;
@@ -72,10 +75,10 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         } else {
             playersToAgentsMap.putAll(game.playersToAgentsMap);
             if (withCards) {
-                for(Integer player: game.cards.keySet()) {
+                for (Integer player : game.cards.keySet()) {
                     cards.put(player, new LinkedList<>(game.cards.get(player)));
                 }
-                HeimlichAndCoCard[] oldCards = game.cardStack.getCards().toArray(new HeimlichAndCoCard[] {});
+                HeimlichAndCoCard[] oldCards = game.cardStack.getCards().toArray(new HeimlichAndCoCard[]{});
                 List<HeimlichAndCoCard> newCards = new LinkedList<>();
                 for (HeimlichAndCoCard oldCard : oldCards) {
                     newCards.add(oldCard.clone());
@@ -89,7 +92,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     // for now this is used for card configuration
     public HeimlichAndCo(String board, int numberOfPLayers) {
         //TODO
-        this(0,numberOfPLayers, null, null, null, board.equals("1"));
+        this(0, numberOfPLayers, null, null, null, board.equals("1"));
     }
 
     public HeimlichAndCo(HeimlichAndCo game) {
@@ -98,8 +101,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     //the main constructor for this class, others call this one
     public HeimlichAndCo(int currentPlayer, int numberOfPLayers,
-                List<ActionRecord<HeimlichAndCoAction>> actionRecords,
-                         HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards)  {
+                         List<ActionRecord<HeimlichAndCoAction>> actionRecords,
+                         HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards) {
         this.currentPlayer = currentPlayer;
         this.numberOfPLayers = numberOfPLayers;
         if (actionRecords == null) {
@@ -121,7 +124,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (withCards) {
             this.cardStack = HeimlichAndCoCardStackFactory.newInstance();
             this.cards = new HashMap<>();
-            for (Integer player: this.playersToAgentsMap.keySet()) { //each player gets two cards at the start of the game
+            for (Integer player : this.playersToAgentsMap.keySet()) { //each player gets two cards at the start of the game
                 List<HeimlichAndCoCard> playerCards = new LinkedList<>();
                 playerCards.add(cardStack.drawCard());
                 playerCards.add(cardStack.drawCard());
@@ -137,46 +140,30 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     //endregion
 
-    //pre-cond: this object must be initialized and have a board
-    private Map<Integer, Agent> createPlayersToAgentsMap(int numberOfPLayers) {
-        Map<Integer, Agent> playersToAgentsMap = new HashMap<>();
-        //we have players numberOfPlayers - 1
-        //we also have numberOfPlayers - 1 Agents
-        //therefore we can just shuffle all agents an assign them to the players
-        List<Agent> shuffledAgents = Arrays.asList(this.board.getAgents());
-        //there should be a different number of total agents and players (-> fake agents)
-        Collections.shuffle(shuffledAgents);
-        for (int i = 0; i < numberOfPLayers; i++) {
-            playersToAgentsMap.put(i, shuffledAgents.get(i));
-        }
-        return playersToAgentsMap;
-    }
-
-
     @Override
-    public boolean isGameOver() {
-        // the game ends, if there is a score marker that reaches the field 42, i.e. if there is a player with a score of 42 or more.
-        return board.isGameOver();
+    public HeimlichAndCoAction determineNextAction() {
+        throw new IllegalStateException("Game should never be in an indeterminate state!");
     }
 
     @Override
-    public int getMinimumNumberOfPlayers() {
-        return HeimlichAndCo.minimumNumberOfPlayers;
+    public Game<HeimlichAndCoAction, HeimlichAndCoBoard> doAction() {
+        throw new IllegalStateException("Game should never be in an indeterminate state!");
     }
 
     @Override
-    public int getMaximumNumberOfPlayers() {
-        return HeimlichAndCo.maximumNumberOfPlayers;
+    public HeimlichAndCo doAction(HeimlichAndCoAction heimlichAndCoAction) {
+        HeimlichAndCo newGame = new HeimlichAndCo(this, false);
+        newGame.applyAction(heimlichAndCoAction);
+        return newGame;
     }
 
     @Override
-    public int getNumberOfPlayers() {
-        return numberOfPLayers;
-    }
-
-    @Override
-    public int getCurrentPlayer() {
-        return currentPlayer;
+    public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
+        int oldCurrentPlayer = this.currentPlayer;
+        this.currentPlayer = i;
+        HeimlichAndCo copy = new HeimlichAndCo(this, true);
+        this.currentPlayer = oldCurrentPlayer;
+        return copy;
     }
 
     /**
@@ -190,7 +177,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     public double getUtilityValue(int i) {
         if (isGameOver()) {
             int maxScore = 0;
-            for(Agent a: board.getScores().keySet()) {
+            for (Agent a : board.getScores().keySet()) {
                 if (board.getScores().get(a) > maxScore) {
                     maxScore = board.getScores().get(a);
                 }
@@ -206,16 +193,87 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     @Override
+    public boolean isValidAction(HeimlichAndCoAction action) {
+        if (action == null) {
+            return false;
+        }
+        return getPossibleActions().contains(action);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Number of players: ").append(numberOfPLayers).append("\n");
+        builder.append("CurrentPlayer: ").append(currentPlayer).append(" -> Agent ").append(playersToAgentsMap.get(currentPlayer).toString()).append("\n");
+        if (withCards) {
+            builder.append("Playing with cards: ").append(cardStack.count()).append(" cards left on the stack").append("\n");
+            if (cards.get(currentPlayer).size() > 0) {
+                builder.append("Cards of current player:\n");
+                for (HeimlichAndCoCard card : cards.get(currentPlayer)) {
+                    builder.append(card.toString()).append("\n");
+                }
+            }
+        } else {
+            builder.append("Playing without cards.\n");
+        }
+        builder.append(board.toString());
+        return builder.toString();
+    }
+
+    @Override
+    public List<ActionRecord<HeimlichAndCoAction>> getActionRecords() {
+        return ListHelpers.deepCopyActionRecordList(actionRecords);
+    }
+
+    /**
+     * gives the agents the possibility to get a copy of the board which can be modified however
+     *
+     * @return a copy of the board
+     */
+    @Override
+    public HeimlichAndCoBoard getBoard() {
+        return board.clone();
+    }
+
+    public Map<Integer, List<HeimlichAndCoCard>> getCards() {
+        return cards;
+    }
+
+    public HeimlichAndCoPhase getCurrentPhase() {
+        return phase;
+    }
+
+    @Override
+    public int getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    @Override
+    public int getMaximumNumberOfPlayers() {
+        return HeimlichAndCo.MAXIMUM_NUMBER_OF_PLAYERS;
+    }
+
+    @Override
+    public int getMinimumNumberOfPlayers() {
+        return HeimlichAndCo.MINIMUM_NUMBER_OF_PLAYERS;
+    }
+
+    @Override
+    public int getNumberOfPlayers() {
+        return numberOfPLayers;
+    }
+
+    @Override
     public Set<HeimlichAndCoAction> getPossibleActions() {
         //check if the last Action triggered a Wertung
-        switch(phase) {
+        switch (phase) {
             case DieRollPhase:
-                return HeimlichAndCoDieRollAction.getPossibleActions(allowCustomDieRolls, board.getDie().getFaces());
+                return HeimlichAndCoDieRollAction.getPossibleActions(allowCustomDieRolls, board.getDieFaces());
             case AgentMovePhase:
                 return HeimlichAndCoAgentMoveAction.getPossibleActions(board, withCards);
             case CardPlayPhase:
                 Set<HeimlichAndCoAction> cardActions = new HashSet<>();
-                for(HeimlichAndCoCard card: cards.get(currentPlayer)) {
+                for (HeimlichAndCoCard card : cards.get(currentPlayer)) {
                     cardActions.addAll(HeimlichAndCoCardAction.getPossibleActions(board, card));
                 }
                 cardActions.add(HeimlichAndCoCardAction.getSkipCardAction());
@@ -225,33 +283,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             default:
                 throw new IllegalStateException("The game is in a state it should not be in");
         }
-    }
-
-    /**
-     * gives the agents the possibility to get a copy of the board which can be modified however
-     * @return a copy of the board
-     */
-    @Override
-    public HeimlichAndCoBoard getBoard() {
-        return board.clone();
-    }
-
-    @Override
-    public Game<HeimlichAndCoAction, HeimlichAndCoBoard> doAction() {
-        throw new IllegalStateException("Game should never be in an indeterminate state!");
-    }
-
-    @Override
-    public boolean isValidAction(HeimlichAndCoAction action) {
-        if (action == null) {
-            return false;
-        }
-        return getPossibleActions().contains(action);
-    }
-
-    @Override
-    public HeimlichAndCoAction determineNextAction() {
-        throw new IllegalStateException("Game should never be in an indeterminate state!");
     }
 
     @Override
@@ -264,47 +295,23 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     @Override
-    public List<ActionRecord<HeimlichAndCoAction>> getActionRecords() {
-        return ListHelpers.deepCopyActionRecordList(actionRecords);
-    }
-
-    @Override
     public boolean isCanonical() {
         return false;
     }
 
     @Override
-    public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
-        int oldCurrentPlayer = this.currentPlayer;
-        this.currentPlayer = i;
-        HeimlichAndCo copy = new HeimlichAndCo(this, true);
-        this.currentPlayer = oldCurrentPlayer;
-        return copy;
+    public boolean isGameOver() {
+        // the game ends, if there is a score marker that reaches the field 42, i.e. if there is a player with a score of 42 or more.
+        return board.isGameOver();
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Number of players: ").append(numberOfPLayers).append("\n");
-        builder.append("CurrentPlayer: ").append(currentPlayer).append(" -> Agent ").append(playersToAgentsMap.get(currentPlayer).toString()).append("\n");
-        if (withCards) {
-            builder.append("Playing with cards: ").append(cardStack.count()).append(" cards left on the stack").append("\n");
-        } else {
-            builder.append("Playing without cards.\n");
-        }
-        builder.append(board.toString());
-        return builder.toString();
-    }
-
-    @Override
-    public HeimlichAndCo doAction(HeimlichAndCoAction heimlichAndCoAction) {
-        HeimlichAndCo newGame = new HeimlichAndCo(this, false);
-        newGame.applyAction(heimlichAndCoAction);
-        return newGame;
+    public void setAllowCustomDieRolls(boolean value) {
+        allowCustomDieRolls = value;
     }
 
     /**
      * applies an action to this game, i.e. does not create a copy of this game as doAction does
+     *
      * @param action action to take
      */
     private void applyAction(HeimlichAndCoAction action) {
@@ -347,22 +354,19 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
     }
 
-    /** gives information about the amount of dummy agents that need to be in play according to the rulebook
-     *
-     * @return the number of dummy agents
-     * @throws IllegalArgumentException if realAgents < 2
-     */
-    private int getNumberOfDummyAgents(int realAgents) {
-        if (realAgents == 2 || realAgents == 3) {
-            return 3;
-        } else if (realAgents > 3) {
-            return 7 - realAgents;
+    //pre-cond: this object must be initialized and have a board
+    private Map<Integer, Agent> createPlayersToAgentsMap(int numberOfPLayers) {
+        Map<Integer, Agent> playersToAgentsMap = new HashMap<>();
+        //we have players numberOfPlayers - 1
+        //we also have numberOfPlayers - 1 Agents
+        //therefore we can just shuffle all agents an assign them to the players
+        List<Agent> shuffledAgents = Arrays.asList(this.board.getAgents());
+        //there should be a different number of total agents and players (-> fake agents)
+        Collections.shuffle(shuffledAgents);
+        for (int i = 0; i < numberOfPLayers; i++) {
+            playersToAgentsMap.put(i, shuffledAgents.get(i));
         }
-        throw new IllegalArgumentException("Invalid amount of real players");
-    }
-
-    public HeimlichAndCoPhase getCurrentPhase() {
-        return phase;
+        return playersToAgentsMap;
     }
 
     //calculates the phase that will be (the action must already be applied!!!)
@@ -419,23 +423,28 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         throw new IllegalArgumentException("The action given does not correspond to a valid type.");
     }
 
-
-    private void turnFinished() {
-        nextPlayer();
-        currentTurnPlayer = currentPlayer;
-        playersSkippedInARowDuringCardPhase = 0;
-
+    /**
+     * gives information about the amount of dummy agents that need to be in play according to the rulebook
+     *
+     * @return the number of dummy agents
+     * @throws IllegalArgumentException if realAgents < 2
+     */
+    private int getNumberOfDummyAgents(int realAgents) {
+        if (realAgents == 2 || realAgents == 3) {
+            return 3;
+        } else if (realAgents > 3) {
+            return 7 - realAgents;
+        }
+        throw new IllegalArgumentException("Invalid amount of real players");
     }
 
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % this.numberOfPLayers;
     }
 
-    public void setAllowCustomDieRolls(boolean value) {
-        allowCustomDieRolls = value;
-    }
-
-    public Map<Integer, List<HeimlichAndCoCard>> getCards() {
-        return cards;
+    private void turnFinished() {
+        nextPlayer();
+        currentTurnPlayer = currentPlayer;
+        playersSkippedInARowDuringCardPhase = 0;
     }
 }

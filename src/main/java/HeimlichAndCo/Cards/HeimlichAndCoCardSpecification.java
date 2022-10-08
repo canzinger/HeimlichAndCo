@@ -27,10 +27,6 @@ public class HeimlichAndCoCardSpecification {
                 this.numberNeeded, this.type, this.agentsOrderInvariant);
     }
 
-    public String toString() {
-        return null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,5 +38,9 @@ public class HeimlichAndCoCardSpecification {
     @Override
     public int hashCode() {
         return Objects.hash(minNumberOfAgents, maxNumberOfAgents, numberNeeded, type, agentsOrderInvariant);
+    }
+
+    public String toString() {
+        return null;
     }
 }

@@ -16,9 +16,8 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
         }
     }
 
-    @Override
-    protected void applyCardSpecific(HeimlichAndCoBoard board, Agent[] agents, int number) {
-        board.moveSafe(number);
+    public HeimlichAndCoMoveSafeCard clone() {
+        return new HeimlichAndCoMoveSafeCard(cardSpecification.clone());
     }
 
     @Override
@@ -39,11 +38,12 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
         return cardSpecification.hashCode() * 53;
     }
 
-    public HeimlichAndCoMoveSafeCard clone() {
-        return new HeimlichAndCoMoveSafeCard(cardSpecification.clone());
-    }
-
     public String toString() {
         return "MoveSafeCard: Move the safe in a building of your choice.";
+    }
+
+    @Override
+    protected void applyCardSpecific(HeimlichAndCoBoard board, Agent[] agents, int number) {
+        board.moveSafe(number);
     }
 }

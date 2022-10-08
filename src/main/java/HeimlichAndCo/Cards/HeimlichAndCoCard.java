@@ -7,7 +7,7 @@ import HeimlichAndCo.HeimlichAndCoBoard;
 import java.util.Arrays;
 import java.util.Set;
 
-public abstract class HeimlichAndCoCard{
+public abstract class HeimlichAndCoCard {
 
     protected final HeimlichAndCoCardSpecification cardSpecification;
 
@@ -18,10 +18,27 @@ public abstract class HeimlichAndCoCard{
         this.cardSpecification = cardSpecification.clone();
     }
 
+    public abstract HeimlichAndCoCard clone();
+
+    public abstract Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board);
+
+    public abstract int hashCode();
+
+    public abstract String toString();
+
+    /**
+     * Will return true if the card will have the same outcome whether it is played with [Agent1, Agent2] or [Agent2, Agent1]
+     *
+     * @return whether the card will have a different effect if the positions of agents are swapped
+     */
+    public boolean agentsOrderInvariant() {
+        return this.cardSpecification.agentsOrderInvariant;
+    }
+
     /**
      * plays/applies the card on the current board with the given agents and number
      *
-     * @param board to which the Card should be applied
+     * @param board  to which the Card should be applied
      * @param agents which should be used for the card (if applicable)
      * @param number which determine how far agents should be moved (if applicable)
      */
@@ -31,7 +48,7 @@ public abstract class HeimlichAndCoCard{
         }
         //check validity with playing agents and check whether an agent is null
         Agent[] playingAgents = board.getAgents();
-        for (Agent a: agents) {
+        for (Agent a : agents) {
             if (a == null) {
                 throw new IllegalArgumentException("An agent cannot be null.");
             } else if (!Arrays.asList(playingAgents).contains(a)) {
@@ -40,6 +57,29 @@ public abstract class HeimlichAndCoCard{
         }
         applyCardSpecific(board, agents, number);
     }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (this.getClass().equals(obj.getClass())) {
+            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the HeimlichAndCoCardSpecification for the given card.
+     * Giving information about how many agents or numbers are needed to apply the card.
+     *
+     * @return the card specification
+     */
+    public final HeimlichAndCoCardSpecification getCardSpecification() {
+        return cardSpecification;
+    }
+
+    protected abstract void applyCardSpecific(HeimlichAndCoBoard board, Agent[] agents, int number);
 
     private boolean checkArgumentsAgainstCardSpecification(Agent[] agents) {
         // first check agents constraints
@@ -54,43 +94,4 @@ public abstract class HeimlichAndCoCard{
         }
         return true;
     }
-
-    protected abstract void applyCardSpecific(HeimlichAndCoBoard board, Agent[] agents, int number);
-
-    public abstract Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board);
-
-    /**
-     * Returns the HeimlichAndCoCardSpecification for the given card.
-     * Giving information about how many agents or numbers are needed to apply the card.
-     * @return the card specification
-     */
-    public final HeimlichAndCoCardSpecification getCardSpecification() {
-        return cardSpecification;
-    }
-
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (this.getClass().equals(obj.getClass())) {
-            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
-        } else {
-            return false;
-        }
-    }
-
-    public abstract int hashCode();
-
-    public abstract HeimlichAndCoCard clone();
-
-    /**
-     * Will return true if the card will have the same outcome whether it is played with [Agent1, Agent2] or [Agent2, Agent1]
-     *
-     * @return whether the card will have a different effect if the positions of agents are swapped
-     */
-    public boolean agentsOrderInvariant() {
-        return this.cardSpecification.agentsOrderInvariant;
-    }
-
-    public abstract String toString();
 }

@@ -18,6 +18,15 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     }
 
     /**
+     * creates the Action that corresponds to moving no agents
+     *
+     * @return AgentMoveAction that is the No Move Action
+     */
+    public static HeimlichAndCoAgentMoveAction getNoMoveAction() {
+        return new HeimlichAndCoAgentMoveAction(null);
+    }
+
+    /**
      * Calculates all possible actions depending on a board state and whether playing with cards
      *
      * @param board     the current board
@@ -84,57 +93,13 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         return retSet;
     }
 
-    /**
-     * creates a Map with Pairs of entries denoting moves for agents
-     *
-     * @param playingAgents Array of agents that are playing
-     * @param agentsMoves   integers denoting the amount the corresponding agent should be moved forward
-     * @return Map denoting moves for agents
-     */
-    private static Map<Agent, Integer> agentsMoveHelper(Agent[] playingAgents, int... agentsMoves) {
-        Map<Agent, Integer> agentsMovesMap = new HashMap<>();
-        for (int i = 0; i < agentsMoves.length; i++) {
-            if (agentsMoves[i] > 0) {
-                agentsMovesMap.put(playingAgents[i], agentsMoves[i]);
-            }
-        }
-        return agentsMovesMap;
-    }
-
-    /**
-     * creates the Action that corresponds to moving no agents
-     *
-     * @return AgentMoveAction that is the No Move Action
-     */
-    public static HeimlichAndCoAgentMoveAction getNoMoveAction() {
-        return new HeimlichAndCoAgentMoveAction(null);
-    }
-
-    /**
-     *
-     * @return whether the action is the No Move Action
-     */
-    public boolean isNoMoveAction() {
-        return agentsMoves.isEmpty();
-    }
-
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("AgentMoveAction: ");
-        for (Agent a : Agent.values()) {
-            if (agentsMoves.containsKey(a)) {
-                stringBuilder.append(a.toString()).append(": ").append(agentsMoves.get(a)).append("; ");
-            }
-        }
-        if (isNoMoveAction()) {
-            stringBuilder.append("no agents are moved, a card is drawn if possible");
-        }
-        return stringBuilder.toString();
-    }
-
     @Override
     public void applyAction(HeimlichAndCoBoard board) {
         board.moveAgents(agentsMoves);
+    }
+
+    public HeimlichAndCoAgentMoveAction clone() {
+        return new HeimlichAndCoAgentMoveAction(this.agentsMoves);
     }
 
     @Override
@@ -148,7 +113,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
                 return false;
             }
             //compare manually, as a Map with no entry for an agent should be equal to a Map with an entry of value 0 for the same agent
-            for(Agent a: toComp.agentsMoves.keySet()) {
+            for (Agent a : toComp.agentsMoves.keySet()) {
                 if (!(this.agentsMoves.containsKey(a) && this.agentsMoves.get(a).equals(toComp.agentsMoves.get(a)))) {
                     return false;
                 }
@@ -182,7 +147,41 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         return false;
     }
 
-    public HeimlichAndCoAgentMoveAction clone() {
-        return new HeimlichAndCoAgentMoveAction(this.agentsMoves);
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("AgentMoveAction: ");
+        for (Agent a : Agent.values()) {
+            if (agentsMoves.containsKey(a)) {
+                stringBuilder.append(a.toString()).append(": ").append(agentsMoves.get(a)).append("; ");
+            }
+        }
+        if (isNoMoveAction()) {
+            stringBuilder.append("no agents are moved, a card is drawn if possible");
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * @return whether the action is the No Move Action
+     */
+    public boolean isNoMoveAction() {
+        return agentsMoves.isEmpty();
+    }
+
+    /**
+     * creates a Map with Pairs of entries denoting moves for agents
+     *
+     * @param playingAgents Array of agents that are playing
+     * @param agentsMoves   integers denoting the amount the corresponding agent should be moved forward
+     * @return Map denoting moves for agents
+     */
+    private static Map<Agent, Integer> agentsMoveHelper(Agent[] playingAgents, int... agentsMoves) {
+        Map<Agent, Integer> agentsMovesMap = new HashMap<>();
+        for (int i = 0; i < agentsMoves.length; i++) {
+            if (agentsMoves[i] > 0) {
+                agentsMovesMap.put(playingAgents[i], agentsMoves[i]);
+            }
+        }
+        return agentsMovesMap;
     }
 }

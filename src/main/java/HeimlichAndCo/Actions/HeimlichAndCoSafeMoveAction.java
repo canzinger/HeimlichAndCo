@@ -24,14 +24,13 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
         return possibleActions;
     }
 
-    public String toString() {
-        return "SafeMoveAction:" +
-                "move safe to " + newSafeLocation;
-    }
-
     @Override
     public void applyAction(HeimlichAndCoBoard board) {
         board.moveSafe(newSafeLocation);
+    }
+
+    public HeimlichAndCoSafeMoveAction clone() {
+        return new HeimlichAndCoSafeMoveAction(newSafeLocation);
     }
 
     @Override
@@ -51,7 +50,8 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
         return newSafeLocation;
     }
 
-    public HeimlichAndCoSafeMoveAction clone() {
-        return new HeimlichAndCoSafeMoveAction(newSafeLocation);
+    public String toString() {
+        return "SafeMoveAction:" +
+                "move safe to " + newSafeLocation;
     }
 }

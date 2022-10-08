@@ -29,7 +29,7 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
      * gets the possible die roll actions depending on whether custom rolls are allowed and the die faces that can be rolled
      *
      * @param allowCustomRoll whether custom die rolls are allowed
-     * @param dieFaces different faces that can be rolled
+     * @param dieFaces        different faces that can be rolled
      * @return Set of HeimlichAndCoActions that denote the possible actions
      */
     public static Set<HeimlichAndCoAction> getPossibleActions(boolean allowCustomRoll, int[] dieFaces) {
@@ -45,16 +45,11 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         return possibleActions;
     }
 
-    public String toString() {
-        if (randomRoll) {
-            if (dieRoll == 0) {
-                return "DieRollAction (random)";
-            } else { //adding the result of the random roll to the string in case it is known
-                return "DieRollAction (random) - roll: " + dieRoll;
-            }
-        } else {
-            return "DieRollAction (custom) - roll: " + dieRoll;
-        }
+    /**
+     * @return the Actions that denotes the random roll action
+     */
+    public static HeimlichAndCoDieRollAction getRandomRollAction() {
+        return new HeimlichAndCoDieRollAction(true);
     }
 
     @Override
@@ -67,12 +62,12 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         }
     }
 
-    /**
-     *
-     * @return the Actions that denotes the random roll action
-     */
-    public static HeimlichAndCoDieRollAction getRandomRollAction() {
-        return new HeimlichAndCoDieRollAction(true);
+    public HeimlichAndCoDieRollAction clone() {
+        if (randomRoll) {
+            return new HeimlichAndCoDieRollAction(true);
+        } else {
+            return new HeimlichAndCoDieRollAction(dieRoll);
+        }
     }
 
     @Override
@@ -96,11 +91,15 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         }
     }
 
-    public HeimlichAndCoDieRollAction clone() {
+    public String toString() {
         if (randomRoll) {
-            return new HeimlichAndCoDieRollAction(true);
+            if (dieRoll == 0) {
+                return "DieRollAction (random)";
+            } else { //adding the result of the random roll to the string in case it is known
+                return "DieRollAction (random) - roll: " + dieRoll;
+            }
         } else {
-            return new HeimlichAndCoDieRollAction(dieRoll);
+            return "DieRollAction (custom) - roll: " + dieRoll;
         }
     }
 
