@@ -312,11 +312,12 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             throw new IllegalArgumentException("Invalid Action given");
         }
 
+        HeimlichAndCoBoard boardCopy = this.board.clone();
         action.applyAction(this.board);
         this.actionRecords.addLast(new ActionRecord<>(currentPlayer, action));
 
         if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
-            if (((HeimlichAndCoAgentMoveAction) action).movesAgentsIntoRuins(this.board)) { //check whether action moves agent into ruins and should therefore be awarded a card
+            if (((HeimlichAndCoAgentMoveAction) action).movesAgentsIntoRuins(boardCopy)) { //check whether action moves agent into ruins and should therefore be awarded a card
                 if (withCards && cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty()) { //maximum of 4 cards per player
                     cards.get(currentPlayer).add(cardStack.drawCard());
                 }
@@ -432,5 +433,9 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     public void setAllowCustomDieRolls(boolean value) {
         allowCustomDieRolls = value;
+    }
+
+    public Map<Integer, List<HeimlichAndCoCard>> getCards() {
+        return cards;
     }
 }
