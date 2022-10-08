@@ -9,16 +9,27 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
 
     private final Map<Agent, Integer> agentsMoves;
 
+    /**
+     * Creates a new instance of HeimlichAndCoAgentMoveAction with the given moves of agents.
+     *
+     * @param agentsMoves Map determining the amount of fields agents should be moved
+     */
     public HeimlichAndCoAgentMoveAction(Map<Agent, Integer> agentsMoves) {
         if (agentsMoves != null && !agentsMoves.isEmpty()) {
-            this.agentsMoves = new HashMap<>(agentsMoves);
+            this.agentsMoves = new HashMap<>();
+            for(Agent a: agentsMoves.keySet()) {
+                if (agentsMoves.get(a).compareTo(0) > 0) { //only add move if is not 0
+                    this.agentsMoves.put(a, agentsMoves.get(a));
+                }
+            }
         } else {
             this.agentsMoves = new HashMap<>();
         }
     }
 
     /**
-     * creates the Action that corresponds to moving no agents
+     * Creates the Action that corresponds to moving no agents.
+     * This action is only valid when playing with cards.
      *
      * @return AgentMoveAction that is the No Move Action
      */
@@ -27,7 +38,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     }
 
     /**
-     * Calculates all possible actions depending on a board state and whether playing with cards
+     * Calculates all possible actions depending on a board state and whether the game is played with or without cards.
      *
      * @param board     the current board
      * @param withCards whether the game is with or without cards
@@ -93,6 +104,11 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         return retSet;
     }
 
+    /**
+     * Applies this action to the given board. The original board is changed.
+     *
+     * @param board board on which the action should be taken
+     */
     @Override
     public void applyAction(HeimlichAndCoBoard board) {
         board.moveAgents(agentsMoves);
@@ -109,10 +125,8 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         }
         if (obj.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
             HeimlichAndCoAgentMoveAction toComp = (HeimlichAndCoAgentMoveAction) obj;
-            if (toComp.agentsMoves.size() != this.agentsMoves.size()) {
-                return false;
-            }
             //compare manually, as a Map with no entry for an agent should be equal to a Map with an entry of value 0 for the same agent
+            //even though there should be no 0 entries for agents
             for (Agent a : toComp.agentsMoves.keySet()) {
                 if (!(this.agentsMoves.containsKey(a) && this.agentsMoves.get(a).equals(toComp.agentsMoves.get(a)))) {
                     return false;
@@ -132,7 +146,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     }
 
     /**
-     * Determines whether the action moves agents into the ruins
+     * Determines whether the action moves agents into the ruins depending on a board
      *
      * @param board which the action will be applied to
      * @return whether the action will move one or more agents into the ruins on the given board
@@ -176,6 +190,9 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
      * @return Map denoting moves for agents
      */
     private static Map<Agent, Integer> agentsMoveHelper(Agent[] playingAgents, int... agentsMoves) {
+        if (playingAgents.length != agentsMoves.length) {
+            throw new IllegalArgumentException("There must be the same amount of agents and numbers given.");
+        }
         Map<Agent, Integer> agentsMovesMap = new HashMap<>();
         for (int i = 0; i < agentsMoves.length; i++) {
             if (agentsMoves[i] > 0) {

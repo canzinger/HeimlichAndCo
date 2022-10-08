@@ -10,10 +10,27 @@ import java.util.Set;
 
 public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
 
-    private final HeimlichAndCoCard card; //the card which should be played; if card == null it means that the player does not want/can play a card
+    /**
+     * The card which should be played; if card == null it means that the player does not want/can play a card
+     */
+    private final HeimlichAndCoCard card;
+    /**
+     * The agents which are needed for playing the card
+     */
     private final Agent[] agents;
+    /**
+     * The number needed for playing the card
+     */
     private final int number;
 
+    /**
+     * Creates a new HeimlichAndCoCardAction which is the action of playing the card with the given agents (if needed) and the number (if needed).
+     * Whether agents or a number is needed depends on the card being player
+     *
+     * @param card the card to be played
+     * @param agents the agents needed for playing the card
+     * @param number the number needed for playing the card
+     */
     public HeimlichAndCoCardAction(HeimlichAndCoCard card, Agent[] agents, int number) {
         if (card != null) {
             this.card = card.clone();
@@ -29,7 +46,8 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
     }
 
     /**
-     * calculates all possible actions for a board and a given card
+     * Calculates all possible actions for a board and a given card.
+     * Calls the respective method of the implementing classes
      *
      * @param board current board
      * @param card  the card for which actions should be calculated
@@ -40,12 +58,17 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
     }
 
     /**
-     * @return the Action that denotes that the player does not want/can play a card
+     * @return the Action that denotes that the player does not want to or cannot play a card
      */
     public static HeimlichAndCoCardAction getSkipCardAction() {
         return new HeimlichAndCoCardAction(null, null, 0);
     }
 
+    /**
+     * Applies this action to the given board. The original board is changed.
+     *
+     * @param board board on which the action should be taken
+     */
     @Override
     public void applyAction(HeimlichAndCoBoard board) {
         if (card != null) {
@@ -110,6 +133,11 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         return hashCode;
     }
 
+    /**
+     * removes the card associated with this action (if there is one) from the given list
+     *
+     * @param list where card should be removed
+     */
     public void removePlayedCardFromList(List<HeimlichAndCoCard> list) {
         if (card != null) {
             list.remove(card);

@@ -5,7 +5,7 @@ import HeimlichAndCo.HeimlichAndCoBoard;
 public interface HeimlichAndCoAction {
 
     /**
-     * does the action on which the function is called; either changes the board or does a die roll
+     * Applies this action to the given board. The original board is changed.
      *
      * @param board board on which the action should be taken
      */
@@ -13,11 +13,20 @@ public interface HeimlichAndCoAction {
 
     HeimlichAndCoAction clone();
 
-    //as well as .equals()
+    /**
+     * Checks whether the given object is equal to this action. Must take semantics into account where some actions
+     * should be considered equal in terms of the outcome when applying them to a board. (E.g. when the order of some
+     * parameters does not matter because they are order invariant).
+     *
+     * @param obj the object which should be compared
+     * @return whether this and obj are considered equal
+     */
+    @Override
     boolean equals(Object obj);
 
+    @Override
     int hashCode();
 
-    //implementing classes should implement toString as well!
+    @Override
     String toString();
 }
