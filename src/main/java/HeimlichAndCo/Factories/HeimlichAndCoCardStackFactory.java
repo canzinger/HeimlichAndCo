@@ -7,6 +7,12 @@ import java.util.LinkedList;
 
 public class HeimlichAndCoCardStackFactory {
 
+    /**
+     * Creates a new CardStack instance with all cards that are in a card stack in the traditional HeimlichAndCo game.
+     * Also shuffles the stack.
+     *
+     * @return a new CardStack instance filled with cards
+     */
     public static CardStack<HeimlichAndCoCard> newInstance() {
         LinkedList<HeimlichAndCoCard> cards = new LinkedList<>();
 
@@ -58,6 +64,14 @@ public class HeimlichAndCoCardStackFactory {
         return cardStack;
     }
 
+    /**
+     * Creates a new CardStack instance with the given size.
+     * This should be used as a method to when copying card stacks from one game to provide a card stack without giving
+     * away which cards remain in the card stack or even which cards come next.
+     *
+     * @param size size the new CardStack should have
+     * @return new CardStack instance
+     */
     public static CardStack<HeimlichAndCoCard> newInstance(int size) {
         CardStack<HeimlichAndCoCard> cardStack = newInstance();
         if (size > cardStack.count()) {
