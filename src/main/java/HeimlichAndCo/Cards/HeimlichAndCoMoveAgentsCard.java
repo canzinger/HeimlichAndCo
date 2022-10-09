@@ -6,8 +6,18 @@ import HeimlichAndCo.HeimlichAndCoBoard;
 
 import java.util.*;
 
+/**
+ * This class represents the cards that can be used to move agents in various ways.
+ * As there are multiple types of MoveAgentsCards, they have to be specified by the type value of the card
+ * specification.
+ */
 public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
 
+    /**
+     * Creates a new HeimlichAndCoAddScorePointCard with the given card specification
+     *
+     * @param cardSpecification card specification for the new card
+     */
     public HeimlichAndCoMoveAgentsCard(HeimlichAndCoCardSpecification cardSpecification) {
         super(cardSpecification);
         if (cardSpecification.type < 0 || cardSpecification.type > 11) {
@@ -19,6 +29,14 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         return new HeimlichAndCoMoveAgentsCard(cardSpecification.clone());
     }
 
+    /**
+     * Calculates all possible actions for a board and this card.
+     * The result of this depends mainly on the specific type of this card. Therefore, this method calls helper methods
+     * which calculate the possible actions for a specific type.
+     *
+     * @param board current board
+     * @return Set of HeimlichAndCoCardActions with possible actions
+     */
     @Override
     public Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board) {
         switch (super.cardSpecification.type) {
@@ -87,6 +105,15 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         }
     }
 
+    /**
+     * Applies this specific card to the board.
+     * The result of this depends mainly on the specific type of this card. Therefore, this method calls helper methods
+     * which apply the card specific to its type.
+     *
+     * @param board  to which the Card should be applied
+     * @param agents which should be used for the card (if applicable)
+     * @param number which determine how far agents should be moved (if applicable)
+     */
     @Override
     protected void applyCardSpecific(HeimlichAndCoBoard board, Agent[] agents, int number) {
         switch (super.cardSpecification.type) {
@@ -131,7 +158,6 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         }
     }
 
-    //region applyTypeX()
     private void applyType0(HeimlichAndCoBoard board, Agent agent, int number) {
         if (number == -1 || number == -2) {
             board.moveAgent(agent, number);
@@ -199,10 +225,6 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         board.moveAgentToAbsoluteBuilding(agents[1], oldPosition0);
     }
 
-    //endregion
-
-    //region getPossibleActionsTypeX()
-
     private void applyType8(HeimlichAndCoBoard board, Agent[] agents) {
         board.moveAgentToAbsoluteBuilding(agents[0], board.getAgentsPositions().get(agents[1]));
     }
@@ -219,6 +241,14 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         }
     }
 
+    /**
+     * returns a list of all possible pairs of agents depending on the input array of agents.
+     * Note: Will only output one of {Agent1, Agent2} and {Agent2, Agent1}. Therefore, the order is taken as not
+     * important.
+     *
+     * @param playingAgents the possible agents for the pairs
+     * @return all possible combinations
+     */
     private List<Agent[]> getPairsOfAgents(Agent[] playingAgents) {
         List<Agent[]> agentPairs = new LinkedList<>();
         for (int i = 0; i < playingAgents.length - 1; i++) {
@@ -312,7 +342,6 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         return actions;
     }
 
-    //endregion
 
     private Set<HeimlichAndCoCardAction> getPossibleActionsType7(HeimlichAndCoBoard board) {
         Set<HeimlichAndCoCardAction> actions = new HashSet<>();
