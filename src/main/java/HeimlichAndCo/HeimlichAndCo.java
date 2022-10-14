@@ -12,46 +12,72 @@ import at.ac.tuwien.ifs.sge.game.Game;
 
 import java.util.*;
 
+/**
+ * The main game class.
+ */
 public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoard> {
 
     private final static int MAXIMUM_NUMBER_OF_PLAYERS = 7;
     private final static int MINIMUM_NUMBER_OF_PLAYERS = 2;
     private final int numberOfPLayers;
     private final HeimlichAndCoBoard board;
-    // map which saves which player is assigned to which Agent (SECRET!)
+    /**
+     * Saves which agent belongs to which player (MUST REMAIN SECRET).
+     */
     private final Map<Integer, Agent> playersToAgentsMap;
-    //region Variables and fields needed for Top-Secret-Variant
+    /**
+     * Whether the game is played with or without cards
+     */
     private final boolean withCards;
-    private final Map<Integer, List<HeimlichAndCoCard>> cards; //cards are assigned to players not agents
-    //linked list is chosen for efficiency reasons,
-    LinkedList<ActionRecord<HeimlichAndCoAction>> actionRecords;
+    /**
+     * Saves which card belongs to which player (MUST REMAIN SECRET).
+     */
+    private final Map<Integer, List<HeimlichAndCoCard>> cards;
+    private final LinkedList<ActionRecord<HeimlichAndCoAction>> actionRecords; //Linked list for efficiency reasons
     private int currentPlayer;
+    /**
+     * The phase the game is currently in.
+     */
     private HeimlichAndCoPhase phase;
-    private int currentTurnPlayer; //saves the whose turn it is; note that this might be different from the current player when playing with cards
+    /**
+     * Saves whose turn it actually is when playing with cards, as the currentPlayer can change during the card round.
+     * More specifically, this player stays the same from rolling the die until the next player rolls the die
+     */
+    private int currentTurnPlayer;
+    /**
+     * The Stack of cards where card will be drawn if needed.
+     */
     private CardStack<HeimlichAndCoCard> cardStack;
-    //endregion
+    /**
+     * Counter of how many players skipped in a row during the card playing phase.
+     */
     private int playersSkippedInARowDuringCardPhase;
-    //whether to allow users to submit custom die Roll Actions
+    /**
+     * Whether custom die rolls are allowed in this game or not. Will be false in a normal game setting.
+     */
     private boolean allowCustomDieRolls;
 
-    //region Constructors
 
+    /**
+     * Creates a new HeimlichAndCo instance with the minimum amount of players needed and without cards.
+     */
     public HeimlichAndCo() {
-        this(0, HeimlichAndCo.MAXIMUM_NUMBER_OF_PLAYERS, null, null, null, false);
+        this(0, HeimlichAndCo.MINIMUM_NUMBER_OF_PLAYERS, null, null, null, false);
     }
 
+    /**
+     * Creates a new HeimlichAndCo instance with the given amount of players and without cards.
+     */
     public HeimlichAndCo(int numberOfPLayers) {
         this(0, numberOfPLayers, null, null, null, false);
     }
-
-    //information that should not be public is stripped, there is only one thing, that is the map that maps the players to their agents
-    // there might be some functions which do not work for the game with stripped information
-    // an agent can find out which player belongs to him by using the playersToAgentsMap with only one entry
 
     /**
      * Copies values from the given game into a new game object. Possible to either strip the new game of private information or not.
      * Therefore, this can be used to create a copy for a certain player which only contains information for the given player.
      * If information is stripped, the only information that will remain is that for the CURRENT PLAYER.
+     * Note: There might be some functions that do not work for games with stripped information.
+     * Note: A player can find out which agent belongs to him by using the playersToAgentsMap
      *
      * @param game             the game which acts as the basis for the new game
      * @param stripInformation whether to strip non-public information from the new game
@@ -91,21 +117,44 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     //TODO custom state positions see documentation
-    // for now this is used for card configuration
+    // for now this is used for card configuration: board == 1 means that the game will be played with cards
     public HeimlichAndCo(String board, int numberOfPLayers) {
         //TODO
         this(0, numberOfPLayers, null, null, null, board.equals("1"));
     }
 
+    /**
+     * Creates a new HeimlichAndCo instance which is a copy of the game given as a parameter.
+     * Private information is not stripped.
+     *
+     * @param game the game which acts as the basis for the new game
+     */
     public HeimlichAndCo(HeimlichAndCo game) {
         this(game, false);
     }
 
-    //the main constructor for this class, others call this one
+    /**
+     * Creates a new HeimlichAndCo instance with the given parameters.
+     * Acts as the base constructor which all other constructors call.
+     *
+     * @param currentPlayer current player
+     * @param numberOfPLayers the number of players that are playing (must confine to the restrictions by minimum and
+     *                        maximum players needed for playing)
+     * @param actionRecords  the action records (can be null)
+     * @param board the board (can be null)
+     * @param playersToAgentsMap Map which maps players to agents (can be null)
+     * @param withCards whether the game should be with or without cards
+     */
     public HeimlichAndCo(int currentPlayer, int numberOfPLayers,
                          List<ActionRecord<HeimlichAndCoAction>> actionRecords,
                          HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards) {
+        if (currentPlayer < 0 || currentPlayer >= numberOfPLayers) {
+            throw new IllegalArgumentException("Current player must be a valid player." + currentPlayer);
+        }
         this.currentPlayer = currentPlayer;
+        if (numberOfPLayers < getMinimumNumberOfPlayers() || numberOfPLayers > getMaximumNumberOfPlayers()) {
+            throw new IllegalArgumentException("Invalid value given for number of players.");
+        }
         this.numberOfPLayers = numberOfPLayers;
         if (actionRecords == null) {
             this.actionRecords = new LinkedList<>();
@@ -140,18 +189,36 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         this.allowCustomDieRolls = false;
     }
 
-    //endregion
-
+    /**
+     * If the game is in a state of indeterminacy, this method will return an action according to the
+     * distribution of probabilities, or hidden information. If the game is in a definitive state null
+     * is returned.
+     * Note: Because HeimlichAndCo can never be in a state of indeterminacy, this function will always return null.
+     *
+     * @return null
+     */
     @Override
     public HeimlichAndCoAction determineNextAction() {
-        throw new IllegalStateException("Game should never be in an indeterminate state!");
+        return null;
     }
 
+    /**
+     * Progresses the game if it currently is in an indeterminant state.
+     * Note: HeimlichAndCo is never in an indeterminant state therefore this method will always throw an exception.
+     *
+     * @throws IllegalStateException (always)
+     */
     @Override
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> doAction() {
         throw new IllegalStateException("Game should never be in an indeterminate state!");
     }
 
+    /**
+     * Does a given action.
+     *
+     * @param heimlichAndCoAction - the action to take
+     * @return a new copy of the game with the action applied
+     */
     @Override
     public HeimlichAndCo doAction(HeimlichAndCoAction heimlichAndCoAction) {
         HeimlichAndCo newGame = new HeimlichAndCo(this, false);
@@ -159,6 +226,15 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return newGame;
     }
 
+    /**
+     * The game as seen from the given player.
+     * In this case this means that private information that the given player should not
+     * be seeing from the game is stripped.
+     * (playersToAgents Map, cards Map, cardStack)
+     *
+     * @param i - the player
+     * @return a copy of this game with private information stripped
+     */
     @Override
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
         int oldCurrentPlayer = this.currentPlayer;
@@ -169,8 +245,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     /**
-     * just returns the current score of the player
-     * Exception: when the game is over, only the winning player is awarded utility, the others get 0 (because they lost)
+     * Returns the current score of the player
+     * Exception: when the game is over, only the winning player is awarded utility, the others get 0 (because they lost).
      *
      * @param i player for which utility is wanted
      * @return utility value
@@ -194,6 +270,12 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
     }
 
+    /**
+     * Returns whether the given action is a valid action in the curretn state of the game.
+     *
+     * @param action - the action
+     * @return whether the action is valid
+     */
     @Override
     public boolean isValidAction(HeimlichAndCoAction action) {
         if (action == null) {
@@ -222,21 +304,28 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return builder.toString();
     }
 
+    /**
+     *
+     * @return the original action records
+     */
     @Override
     public List<ActionRecord<HeimlichAndCoAction>> getActionRecords() {
-        return ListHelpers.deepCopyActionRecordList(actionRecords);
+        return actionRecords;
     }
 
     /**
-     * gives the agents the possibility to get a copy of the board which can be modified however
      *
-     * @return a copy of the board
+     * @return the original reference of the board
      */
     @Override
     public HeimlichAndCoBoard getBoard() {
-        return board.clone();
+        return board;
     }
 
+    /**
+     *
+     * @return the original reference of the cards map
+     */
     public Map<Integer, List<HeimlichAndCoCard>> getCards() {
         return cards;
     }
@@ -265,9 +354,17 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return numberOfPLayers;
     }
 
+    /**
+     * Collects all possible actions for the given game state and returns them as a set.
+     * If the game is over en empty set is returned.
+     *
+     * @return a set of possible actions
+     */
     @Override
     public Set<HeimlichAndCoAction> getPossibleActions() {
-        //check if the last Action triggered a Wertung
+        if (isGameOver()) {
+            return new HashSet<>();
+        }
         switch (phase) {
             case DieRollPhase:
                 return HeimlichAndCoDieRollAction.getPossibleActions(allowCustomDieRolls, board.getDieFaces());
@@ -287,6 +384,10 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
     }
 
+    /**
+     *
+     * @return the action record of the last taken action
+     */
     @Override
     public ActionRecord<HeimlichAndCoAction> getPreviousActionRecord() {
         if (!actionRecords.isEmpty()) {
@@ -296,23 +397,40 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
     }
 
+    /**
+     * Returns whether the game is canonical.
+     * Note: Always returns false
+     *
+     * @return false
+     */
     @Override
     public boolean isCanonical() {
         return false;
     }
 
+    /**
+     * Determines whether the game is over. In HeimlichAndCo this is the case if a player has a score of 42 or more.
+     *
+     * @return whether the game is over
+     */
     @Override
     public boolean isGameOver() {
         // the game ends, if there is a score marker that reaches the field 42, i.e. if there is a player with a score of 42 or more.
         return board.isGameOver();
     }
 
+    /**
+     * Sets whether custom die rolls should be allowed or not. If set to true, this allows the agents to "choose" what
+     * they want to roll. This is useful when doing MCTS or something similar.
+     *
+     * @param value whether to allow custom die rolls.
+     */
     public void setAllowCustomDieRolls(boolean value) {
         allowCustomDieRolls = value;
     }
 
     /**
-     * applies an action to this game, i.e. does not create a copy of this game as doAction does
+     * Applies an action to this game, DOES NOT create a copy of this game (in contrast to doAction).
      *
      * @param action action to take
      */
@@ -356,7 +474,14 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
     }
 
-    //pre-cond: this object must be initialized and have a board
+
+    /**
+     * Creates a map with maps each player to their agent.
+     * Note: This is randomized!
+     *
+     * @param numberOfPLayers how many players are playing
+     * @return a map with an entry for each player
+     */
     private Map<Integer, Agent> createPlayersToAgentsMap(int numberOfPLayers) {
         Map<Integer, Agent> playersToAgentsMap = new HashMap<>();
         //we have players numberOfPlayers - 1
@@ -371,7 +496,13 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return playersToAgentsMap;
     }
 
-    //calculates the phase that will be (the action must already be applied!!!)
+    /**
+     * Determines the next phase of this game depending on a taken action.
+     * Precondition: The action given must already be applied to the game.
+     * @param action the action taken
+     * @param scoreTriggered whether scoring is/was triggered on the last actions
+     * @return the phase the game should enter
+     */
     private HeimlichAndCoPhase getNextPhase(HeimlichAndCoAction action, boolean scoreTriggered) {
         if (action.getClass().equals(HeimlichAndCoDieRollAction.class)) {
             if (phase == HeimlichAndCoPhase.DieRollPhase) {
@@ -426,7 +557,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     /**
-     * gives information about the amount of dummy agents that need to be in play according to the rulebook
+     * Gives information about the amount of dummy agents that need to be in play according to the rulebook.
      *
      * @return the number of dummy agents
      * @throws IllegalArgumentException if realAgents < 2
@@ -440,10 +571,18 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         throw new IllegalArgumentException("Invalid amount of real players");
     }
 
+    /**
+     * Sets the currentPlayer to the next player.
+     * Extra method for this to be able to easier control the changing of it.
+     */
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % this.numberOfPLayers;
     }
 
+    /**
+     * This method must be called when a turn ends.
+     * A turn consist of a die roll, a move action, card action(s), and sometimes a safe move action.
+     */
     private void turnFinished() {
         nextPlayer();
         currentTurnPlayer = currentPlayer;

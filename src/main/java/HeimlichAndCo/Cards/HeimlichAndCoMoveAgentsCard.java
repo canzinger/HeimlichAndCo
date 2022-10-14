@@ -330,7 +330,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         Agent[] agents = board.getAgents();
         for (Agent a : agents) {
             if (agentsPositions.get(a) != 11) {
-                actions.add(new HeimlichAndCoCardAction(this, new Agent[]{a}, 11));
+                actions.add(new HeimlichAndCoCardAction(this, new Agent[]{a}, 0));
             }
         }
         return actions;
