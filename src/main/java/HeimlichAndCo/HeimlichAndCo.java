@@ -479,6 +479,10 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return board.isGameOver();
     }
 
+    public boolean isWithCards() {
+        return withCards;
+    }
+
     /**
      * Sets whether custom die rolls should be allowed or not. If set to true, this allows the agents to "choose" what
      * they want to roll. This is useful when doing MCTS or something similar.

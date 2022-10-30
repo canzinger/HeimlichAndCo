@@ -150,7 +150,7 @@ public class HeimlichAndCoBoard {
      */
     public int getPointsForField(int fieldId) {
         if (fieldId < 0 || fieldId > 11) {
-            throw new IllegalArgumentException("Illegal fieldId, either too large or too small");
+            throw new IllegalArgumentException("Illegal fieldId, either too large or too small: FieldId is " + fieldId);
         }
         if (fieldId == 11) {
             return -3; //the only case where the agent is awarded negative points for a field (field 11)
@@ -169,7 +169,8 @@ public class HeimlichAndCoBoard {
         if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.NUMBER_OF_FIELDS != 0) {
             scoringTriggeredForAgent.put(a, false);
         }
-        agentsPositions.replace(a, (agentsPositions.get(a) + numberOfFields) % HeimlichAndCoBoard.NUMBER_OF_FIELDS);
+
+        agentsPositions.replace(a, (agentsPositions.get(a) + numberOfFields + HeimlichAndCoBoard.NUMBER_OF_FIELDS) % HeimlichAndCoBoard.NUMBER_OF_FIELDS); // +NUMBER_OF_FIELDS to deal with cases where the new position would be negative
         if (agentsPositions.get(a) == safePosition && numberOfFields % HeimlichAndCoBoard.NUMBER_OF_FIELDS != 0) {
             scoringTriggeredForAgent.put(a, true);
         }

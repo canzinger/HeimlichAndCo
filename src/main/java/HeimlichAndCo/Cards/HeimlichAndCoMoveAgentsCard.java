@@ -378,7 +378,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         }
         List<Agent[]> agentPairs = getPairsOfAgents(playingAgents);
         for (Agent[] pair : agentPairs) {
-            if (board.getAgentsPositions().get(pair[0]).equals(11) && board.getAgentsPositions().get(pair[0]).equals(11)) {
+            if (board.getAgentsPositions().get(pair[0]).equals(11) && board.getAgentsPositions().get(pair[1]).equals(11)) {
                 actions.add(new HeimlichAndCoCardAction(this, new Agent[]{pair[0], pair[1]}, 0));
             }
         }
