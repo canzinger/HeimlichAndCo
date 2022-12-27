@@ -114,6 +114,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
                 cardStack = new CardStack<>(newCards);
             }
         }
+        allowCustomDieRolls = game.allowCustomDieRolls;
     }
 
     //TODO custom state positions see documentation

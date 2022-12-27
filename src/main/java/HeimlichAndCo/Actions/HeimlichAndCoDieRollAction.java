@@ -94,7 +94,7 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         if (obj == this) {
             return true;
         }
-        if (obj.getClass().equals(HeimlichAndCoDieRollAction.class)) {
+        if (obj != null && obj.getClass().equals(HeimlichAndCoDieRollAction.class)) {
             HeimlichAndCoDieRollAction toComp = (HeimlichAndCoDieRollAction) obj;
             if (this.randomRoll) {
                 return toComp.randomRoll;
