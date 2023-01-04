@@ -1,6 +1,6 @@
 # Cards
 
-There are 3 different general types of cards:
+In general, there are 3 different types of cards:
 
 - HeimlichAndCoAddScorePointsCard
 - HeimlichAndCoMoveSafeCard
@@ -10,7 +10,7 @@ There are 3 different general types of cards:
 
 - Number of different types: 1
 - This card allows the player to move the score markers (i.e. increase the score) of
-  two agents by three fields each. But only up to the field (=score) of 40.
+  two agents by three fields each, but only up to the field (=score) of 40.
 
 ## 2. HeimlichAndCoMoveSafeCard
 
@@ -22,7 +22,7 @@ There are 3 different general types of cards:
 
 - Number of different types: 12
 - The different cards of this type allow the player to move agents in different ways.
-  Each type will therefore be described here seperately.
+  Each type will therefore be described here separately.
   Mind that the numbering of the types
   here is the same as for the "type" variable in the card itself.
 
@@ -46,7 +46,7 @@ This card allows the player to move two agents of their choice one building forw
 
 ### 3.4 HeimlichAndCoMoveAgentsCard with type 4
 
-This card allows the player to move one agent which stands on the same field as the safe
+This card allows the player to move one agent that stands on the same field as the safe
 by one field forwards or backwards (away from the safe).
 
 ### 3.5 HeimlichAndCoMoveAgentsCard with type 5
@@ -63,8 +63,8 @@ This card allows the player to swap the places of two agents.
 
 ### 3.8 HeimlichAndCoMoveAgentsCard with type 8
 
-This card allows the player to move one agent to another one.  
-Note: The first player that is given is the one that is being moved.
+This card allows the player to move one agent to the field of another agent.  
+Note: The first player that is given when playing the card is the one that is being moved.
 
 ### 3.9 HeimlichAndCoMoveAgentsCard with type 9
 
