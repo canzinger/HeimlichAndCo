@@ -223,6 +223,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             if (((HeimlichAndCoCardAction) action).isSkipCardAction()) {
                 playersSkippedInARowDuringCardPhase++;
                 nextPlayer();
+            } else {
+                playersSkippedInARowDuringCardPhase = 0;
             }
         }
 
