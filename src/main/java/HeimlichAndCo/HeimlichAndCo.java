@@ -117,11 +117,21 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         allowCustomDieRolls = game.allowCustomDieRolls;
     }
 
-    //TODO custom state positions see documentation
-    // for now this is used for card configuration: board == 1 means that the game will be played with cards
+    /**
+     * NOTE: This is a deviation from the "original" description of the engine. The engine uses this method to allow
+     * for custom boards. As this is not possible or rather does not make sense for Heimlich&Co, a custom board does not
+     * make sense.
+     *
+     * The -b option is therefore used to set whether to play with or without cards. If board equals "1",
+     * "cards" or "Cards", then the game is constructed to be played with cards. If board does not equals any of these
+     * values or the option is not used, the game is played without cards.
+     *
+     * @param board string indicating whether the game is played with cards
+     * @param numberOfPLayers
+     */
     public HeimlichAndCo(String board, int numberOfPLayers) {
-        //TODO
-        this(0, numberOfPLayers, null, null, null, board.equals("1"));
+        this(0, numberOfPLayers, null, null, null,
+                board != null && (board.equals("1") || board.equals("cards") || board.equals("Cards")));
     }
 
     /**
@@ -192,6 +202,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     /**
      * Applies an action to this game, DOES NOT create a copy of this game (in contrast to doAction).
+     *
+     * More performant than doAction (as the game does not have to be copied), but changes THIS instance.
      *
      * @param action action to take
      */
