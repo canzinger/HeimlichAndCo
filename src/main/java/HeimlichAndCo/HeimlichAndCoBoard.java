@@ -517,10 +517,24 @@ public class HeimlichAndCoBoard {
      * @return Agent array with the participating agents
      */
     private static Agent[] getParticipatingAgents(int number) {
+        if (number > Agent.values().length) {
+            throw new IllegalArgumentException("There are not enough agents (Input: " + number + ").");
+        }
         Agent[] totalAgents = Agent.values();
         Agent[] participatingAgents = new Agent[number];
         System.arraycopy(totalAgents, 0, participatingAgents, 0, number);
         return participatingAgents;
+    }
+
+    /**
+     * Returns a map which indicates if scoring was triggered in the current round for a player. This can be
+     * interpreted that if after moving an agent or after the top-secret round there is a true value for ANY agent,
+     * then scoring is triggered.
+     *
+     * @return Map with an entry for each agent.
+     */
+    public Map<Agent, Boolean> getScoringTriggeredForAgent() {
+        return scoringTriggeredForAgent;
     }
 }
 
