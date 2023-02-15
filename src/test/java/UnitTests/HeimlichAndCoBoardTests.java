@@ -4,7 +4,6 @@ import HeimlichAndCo.Enums.Agent;
 import HeimlichAndCo.HeimlichAndCoBoard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 import java.util.Map;
 
 public class HeimlichAndCoBoardTests {
@@ -48,6 +47,10 @@ public class HeimlichAndCoBoardTests {
         board.moveAgent(board.getAgents()[0], 6);
         HeimlichAndCoBoard newBoard = board.clone();
 
+        Assertions.assertEquals(board.getLastDieRoll(), newBoard.getLastDieRoll());
+        Assertions.assertArrayEquals(board.getAgents(), newBoard.getAgents());
+        Assertions.assertEquals(board.getScoringTriggeredForAgent(), newBoard.getScoringTriggeredForAgent());
+
         //checking safe position and whether moving it on one board impacts the other one
         Assertions.assertEquals(board.getSafePosition(), newBoard.getSafePosition());
         newBoard.moveSafe(6);
@@ -67,6 +70,7 @@ public class HeimlichAndCoBoardTests {
         scores.replace(board.getAgents()[0], 100);
         Assertions.assertEquals(board.getScores().get(board.getAgents()[0]), oldScore);
         Assertions.assertEquals(newBoard.getScores().get(newBoard.getAgents()[0]), 100);
+
     }
 
     //endregion

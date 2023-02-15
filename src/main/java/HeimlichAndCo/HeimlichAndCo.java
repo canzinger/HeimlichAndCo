@@ -127,10 +127,10 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * values or the option is not used, the game is played without cards.
      *
      * @param board string indicating whether the game is played with cards
-     * @param numberOfPLayers
+     * @param numberOfPlayers
      */
-    public HeimlichAndCo(String board, int numberOfPLayers) {
-        this(0, numberOfPLayers, null, null, null,
+    public HeimlichAndCo(String board, int numberOfPlayers) {
+        this(0, numberOfPlayers, null, null, null,
                 board != null && (board.equals("1") || board.equals("cards") || board.equals("Cards")));
     }
 
@@ -300,6 +300,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         int oldCurrentPlayer = this.currentPlayer;
         this.currentPlayer = i;
         HeimlichAndCo copy = new HeimlichAndCo(this, true);
+        copy.currentPlayer = oldCurrentPlayer;
         this.currentPlayer = oldCurrentPlayer;
         return copy;
     }
@@ -621,5 +622,29 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         nextPlayer();
         currentTurnPlayer = currentPlayer;
         playersSkippedInARowDuringCardPhase = 0;
+    }
+
+    public CardStack<HeimlichAndCoCard> getCardStack() {
+        return cardStack;
+    }
+
+    public void setCardStack(CardStack<HeimlichAndCoCard> cardStack) {
+        this.cardStack = cardStack;
+    }
+
+    public int getCurrentTurnPlayer() {
+        return currentTurnPlayer;
+    }
+
+    public boolean isAllowCustomDieRolls() {
+        return allowCustomDieRolls;
+    }
+
+    public int getPlayersSkippedInARowDuringCardPhase() {
+        return playersSkippedInARowDuringCardPhase;
+    }
+
+    public void setPlayersSkippedInARowDuringCardPhase(int playersSkippedInARowDuringCardPhase) {
+        this.playersSkippedInARowDuringCardPhase = playersSkippedInARowDuringCardPhase;
     }
 }

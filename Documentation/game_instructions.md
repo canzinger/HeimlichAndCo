@@ -77,7 +77,7 @@ A dummy agent can also be the solo winner, in that case it counts as a draw for 
 
 ## 6. Top-Secret Mode
 The top-secret mode is an extension to basic gameplay. In this mode, there are cards that can influence the outcome of the game.  
-In total, there are 26 top-secret cards (25 in the implemented game). At the beginning of the game, each player receives two cards, and can receive more during the game.  
+In total, there are 26 top-secret cards (25 are in the implemented game). At the beginning of the game, each player receives two cards, and can receive more during the game.  
 The cards are described in separate 'Cards.pdf' file. A player can have 4 cards at most on hand.  
 Therefore, there are a few changes:  
 - **Die side '1-3'**: For this side, the player can now choose to receive 0 move points, and instead receive a card.
