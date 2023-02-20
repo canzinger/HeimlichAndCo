@@ -1,6 +1,6 @@
-package HeimlichAndCo.Actions;
+package heimlichAndCo.Actions;
 
-import HeimlichAndCo.HeimlichAndCoBoard;
+import heimlichAndCo.HeimlichAndCoBoard;
 
 public interface HeimlichAndCoAction {
 

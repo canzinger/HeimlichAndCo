@@ -1,12 +1,12 @@
-package HeimlichAndCo;
+package heimlichAndCo;
 
-import HeimlichAndCo.Actions.*;
-import HeimlichAndCo.Cards.HeimlichAndCoCard;
-import HeimlichAndCo.Enums.Agent;
-import HeimlichAndCo.Enums.HeimlichAndCoPhase;
-import HeimlichAndCo.Factories.HeimlichAndCoCardStackFactory;
-import HeimlichAndCo.Util.CardStack;
-import HeimlichAndCo.Util.ListHelpers;
+import heimlichAndCo.Actions.*;
+import heimlichAndCo.Cards.HeimlichAndCoCard;
+import heimlichAndCo.Enums.Agent;
+import heimlichAndCo.Enums.HeimlichAndCoPhase;
+import heimlichAndCo.Factories.HeimlichAndCoCardStackFactory;
+import heimlichAndCo.Util.CardStack;
+import heimlichAndCo.Util.ListHelpers;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
 import at.ac.tuwien.ifs.sge.game.Game;
 
@@ -15,10 +15,10 @@ import java.util.*;
 /**
  * The main game class.
  */
-public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoard> {
+public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoBoard> {
 
-    private final static int MAXIMUM_NUMBER_OF_PLAYERS = 7;
-    private final static int MINIMUM_NUMBER_OF_PLAYERS = 2;
+    private static final int MAXIMUM_NUMBER_OF_PLAYERS = 7;
+    private static final int MINIMUM_NUMBER_OF_PLAYERS = 2;
     private final int numberOfPLayers;
     private final HeimlichAndCoBoard board;
     /**
@@ -59,16 +59,16 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
 
     /**
-     * Creates a new HeimlichAndCo instance with the minimum amount of players needed and without cards.
+     * Creates a new heimlich_and_co instance with the minimum amount of players needed and without cards.
      */
-    public HeimlichAndCo() {
-        this(0, HeimlichAndCo.MINIMUM_NUMBER_OF_PLAYERS, null, null, null, false);
+    public heimlich_and_co() {
+        this(0, heimlich_and_co.MINIMUM_NUMBER_OF_PLAYERS, null, null, null, false);
     }
 
     /**
-     * Creates a new HeimlichAndCo instance with the given amount of players and without cards.
+     * Creates a new heimlich_and_co instance with the given amount of players and without cards.
      */
-    public HeimlichAndCo(int numberOfPLayers) {
+    public heimlich_and_co(int numberOfPLayers) {
         this(0, numberOfPLayers, null, null, null, false);
     }
 
@@ -82,7 +82,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @param game             the game which acts as the basis for the new game
      * @param stripInformation whether to strip non-public information from the new game
      */
-    public HeimlichAndCo(HeimlichAndCo game, boolean stripInformation) {
+    public heimlich_and_co(heimlich_and_co game, boolean stripInformation) {
         this(game.getCurrentPlayer(), game.numberOfPLayers, game.actionRecords, game.board, null, game.withCards);
         phase = game.phase;
         currentTurnPlayer = game.currentTurnPlayer;
@@ -129,23 +129,23 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @param board string indicating whether the game is played with cards
      * @param numberOfPlayers
      */
-    public HeimlichAndCo(String board, int numberOfPlayers) {
+    public heimlich_and_co(String board, int numberOfPlayers) {
         this(0, numberOfPlayers, null, null, null,
                 board != null && (board.equals("1") || board.equals("cards") || board.equals("Cards")));
     }
 
     /**
-     * Creates a new HeimlichAndCo instance which is a copy of the game given as a parameter.
+     * Creates a new heimlich_and_co instance which is a copy of the game given as a parameter.
      * Private information is not stripped.
      *
      * @param game the game which acts as the basis for the new game
      */
-    public HeimlichAndCo(HeimlichAndCo game) {
+    public heimlich_and_co(heimlich_and_co game) {
         this(game, false);
     }
 
     /**
-     * Creates a new HeimlichAndCo instance with the given parameters.
+     * Creates a new heimlich_and_co instance with the given parameters.
      * Acts as the base constructor which all other constructors call.
      *
      * @param currentPlayer      current player
@@ -156,9 +156,9 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @param playersToAgentsMap Map which maps players to agents (can be null)
      * @param withCards          whether the game should be with or without cards
      */
-    public HeimlichAndCo(int currentPlayer, int numberOfPLayers,
-                         List<ActionRecord<HeimlichAndCoAction>> actionRecords,
-                         HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards) {
+    public heimlich_and_co(int currentPlayer, int numberOfPLayers,
+                           List<ActionRecord<HeimlichAndCoAction>> actionRecords,
+                           HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards) {
         if (currentPlayer < 0 || currentPlayer >= numberOfPLayers) {
             throw new IllegalArgumentException("Current player must be a valid player." + currentPlayer);
         }
@@ -253,7 +253,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * If the game is in a state of indeterminacy, this method will return an action according to the
      * distribution of probabilities, or hidden information. If the game is in a definitive state null
      * is returned.
-     * Note: Because HeimlichAndCo can never be in a state of indeterminacy, this function will always return null.
+     * Note: Because heimlich_and_co can never be in a state of indeterminacy, this function will always return null.
      *
      * @return null
      */
@@ -269,15 +269,15 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @return a new copy of the game with the action applied
      */
     @Override
-    public HeimlichAndCo doAction(HeimlichAndCoAction heimlichAndCoAction) {
-        HeimlichAndCo newGame = new HeimlichAndCo(this, false);
+    public heimlich_and_co doAction(HeimlichAndCoAction heimlichAndCoAction) {
+        heimlich_and_co newGame = new heimlich_and_co(this, false);
         newGame.applyAction(heimlichAndCoAction);
         return newGame;
     }
 
     /**
      * Progresses the game if it currently is in an indeterminant state.
-     * Note: HeimlichAndCo is never in an indeterminant state therefore this method will always throw an exception.
+     * Note: heimlich_and_co is never in an indeterminant state therefore this method will always throw an exception.
      *
      * @throws IllegalStateException (always)
      */
@@ -299,7 +299,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
         int oldCurrentPlayer = this.currentPlayer;
         this.currentPlayer = i;
-        HeimlichAndCo copy = new HeimlichAndCo(this, true);
+        heimlich_and_co copy = new heimlich_and_co(this, true);
         copy.currentPlayer = oldCurrentPlayer;
         this.currentPlayer = oldCurrentPlayer;
         return copy;
@@ -352,7 +352,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         builder.append("CurrentPlayer: ").append(currentPlayer).append(" -> Agent ").append(playersToAgentsMap.get(currentPlayer).toString()).append("\n");
         if (withCards) {
             builder.append("Playing with cards: ").append(cardStack.count()).append(" cards left on the stack").append("\n");
-            if (cards.get(currentPlayer).size() > 0) {
+            if (cards.get(currentPlayer).isEmpty()) {
                 builder.append("Cards of current player:\n");
                 for (HeimlichAndCoCard card : cards.get(currentPlayer)) {
                     builder.append(card.toString()).append("\n");
@@ -405,12 +405,12 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     @Override
     public int getMaximumNumberOfPlayers() {
-        return HeimlichAndCo.MAXIMUM_NUMBER_OF_PLAYERS;
+        return heimlich_and_co.MAXIMUM_NUMBER_OF_PLAYERS;
     }
 
     @Override
     public int getMinimumNumberOfPlayers() {
-        return HeimlichAndCo.MINIMUM_NUMBER_OF_PLAYERS;
+        return heimlich_and_co.MINIMUM_NUMBER_OF_PLAYERS;
     }
 
     @Override
@@ -485,7 +485,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     /**
-     * Determines whether the game is over. In HeimlichAndCo this is the case if a player has a score of 42 or more.
+     * Determines whether the game is over. In heimlich_and_co this is the case if a player has a score of 42 or more.
      *
      * @return whether the game is over
      */
@@ -517,7 +517,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @return a map with an entry for each player
      */
     private Map<Integer, Agent> createPlayersToAgentsMap(int numberOfPLayers) {
-        Map<Integer, Agent> playersToAgentsMap = new HashMap<>();
+        Map<Integer, Agent> map = new HashMap<>();
         //we have players numberOfPlayers - 1
         //we also have numberOfPlayers - 1 Agents
         //therefore we can just shuffle all agents an assign them to the players
@@ -525,9 +525,9 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         //there should be a different number of total agents and players (-> fake agents)
         Collections.shuffle(shuffledAgents);
         for (int i = 0; i < numberOfPLayers; i++) {
-            playersToAgentsMap.put(i, shuffledAgents.get(i));
+            map.put(i, shuffledAgents.get(i));
         }
-        return playersToAgentsMap;
+        return map;
     }
 
     /**

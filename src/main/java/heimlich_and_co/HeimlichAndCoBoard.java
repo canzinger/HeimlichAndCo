@@ -1,7 +1,7 @@
-package HeimlichAndCo;
+package heimlichAndCo;
 
-import HeimlichAndCo.Enums.Agent;
-import HeimlichAndCo.Util.Die;
+import heimlichAndCo.Enums.Agent;
+import heimlichAndCo.Util.Die;
 
 import java.util.*;
 

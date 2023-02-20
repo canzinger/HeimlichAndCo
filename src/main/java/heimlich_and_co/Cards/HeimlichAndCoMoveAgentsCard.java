@@ -1,8 +1,8 @@
-package HeimlichAndCo.Cards;
+package heimlichAndCo.Cards;
 
-import HeimlichAndCo.Actions.HeimlichAndCoCardAction;
-import HeimlichAndCo.Enums.Agent;
-import HeimlichAndCo.HeimlichAndCoBoard;
+import heimlichAndCo.Actions.HeimlichAndCoCardAction;
+import heimlichAndCo.Enums.Agent;
+import heimlichAndCo.HeimlichAndCoBoard;
 
 import java.util.*;
 

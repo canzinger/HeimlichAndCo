@@ -1,4 +1,4 @@
-package HeimlichAndCo.Enums;
+package heimlichAndCo.Enums;
 
 public enum Agent {
     Perry,

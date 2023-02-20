@@ -1,7 +1,7 @@
-package HeimlichAndCo.Actions;
+package heimlichAndCo.Actions;
 
-import HeimlichAndCo.Enums.Agent;
-import HeimlichAndCo.HeimlichAndCoBoard;
+import heimlichAndCo.Enums.Agent;
+import heimlichAndCo.HeimlichAndCoBoard;
 
 import java.util.*;
 

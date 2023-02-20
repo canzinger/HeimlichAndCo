@@ -1,6 +1,6 @@
-package HeimlichAndCo.Util;
+package heimlichAndCo.Util;
 
-import HeimlichAndCo.Actions.HeimlichAndCoAction;
+import heimlichAndCo.Actions.HeimlichAndCoAction;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
 
 import java.util.LinkedList;

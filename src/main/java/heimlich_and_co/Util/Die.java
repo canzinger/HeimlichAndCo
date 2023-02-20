@@ -1,4 +1,4 @@
-package HeimlichAndCo.Util;
+package heimlichAndCo.Util;
 
 import java.util.Random;
 
