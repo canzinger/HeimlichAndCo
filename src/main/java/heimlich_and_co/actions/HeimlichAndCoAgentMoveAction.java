@@ -1,6 +1,6 @@
-package heimlich_and_co.Actions;
+package heimlich_and_co.actions;
 
-import heimlich_and_co.Enums.Agent;
+import heimlich_and_co.enums.Agent;
 import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.*;
@@ -120,6 +120,9 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
         if (obj == this) {
             return true;
         }
@@ -154,7 +157,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     public boolean movesAgentsIntoRuins(HeimlichAndCoBoard board) {
         Map<Agent, Integer> positions = board.getAgentsPositions();
         for (Agent agent : this.agentsMoves.keySet()) {
-            if ((positions.get(agent) + agentsMoves.get(agent)) % board.getNumberOfFields() == board.getRuinsField()) {
+            if ((positions.get(agent) + agentsMoves.get(agent)) % board.getNumberOfFields() == HeimlichAndCoBoard.getRuinsField()) {
                 return true;
             }
         }

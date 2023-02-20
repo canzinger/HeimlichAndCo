@@ -1,6 +1,6 @@
 package UnitTests;
 
-import heimlich_and_co.Enums.Agent;
+import heimlich_and_co.enums.Agent;
 import heimlich_and_co.HeimlichAndCoBoard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

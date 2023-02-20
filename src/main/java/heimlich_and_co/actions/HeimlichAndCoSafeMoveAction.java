@@ -1,4 +1,4 @@
-package heimlich_and_co.Actions;
+package heimlich_and_co.actions;
 
 import heimlich_and_co.HeimlichAndCoBoard;
 
@@ -52,6 +52,9 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
         if (obj == this) {
             return true;
         }

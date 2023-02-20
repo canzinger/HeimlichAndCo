@@ -1,7 +1,7 @@
-package heimlich_and_co.Factories;
+package heimlich_and_co.factories;
 
-import heimlich_and_co.Cards.*;
-import heimlich_and_co.Util.CardStack;
+import heimlich_and_co.cards.*;
+import heimlich_and_co.util.CardStack;
 
 import java.util.LinkedList;
 

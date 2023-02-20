@@ -1,4 +1,4 @@
-package heimlich_and_co.Actions;
+package heimlich_and_co.actions;
 
 import heimlich_and_co.HeimlichAndCoBoard;
 

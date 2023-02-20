@@ -1,7 +1,7 @@
-package heimlich_and_co.Cards;
+package heimlich_and_co.cards;
 
-import heimlich_and_co.Actions.HeimlichAndCoCardAction;
-import heimlich_and_co.Enums.Agent;
+import heimlich_and_co.actions.HeimlichAndCoCardAction;
+import heimlich_and_co.enums.Agent;
 import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.Arrays;

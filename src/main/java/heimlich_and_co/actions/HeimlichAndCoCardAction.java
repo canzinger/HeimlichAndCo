@@ -1,7 +1,7 @@
-package heimlich_and_co.Actions;
+package heimlich_and_co.actions;
 
-import heimlich_and_co.Enums.Agent;
-import heimlich_and_co.Cards.HeimlichAndCoCard;
+import heimlich_and_co.enums.Agent;
+import heimlich_and_co.cards.HeimlichAndCoCard;
 import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.Arrays;
@@ -87,6 +87,9 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
         if (this == obj) {
             return true;
         }

@@ -1,12 +1,12 @@
 package heimlich_and_co;
 
-import heimlich_and_co.Actions.*;
-import heimlich_and_co.Cards.HeimlichAndCoCard;
-import heimlich_and_co.Enums.Agent;
-import heimlich_and_co.Enums.HeimlichAndCoPhase;
-import heimlich_and_co.Factories.HeimlichAndCoCardStackFactory;
-import heimlich_and_co.Util.CardStack;
-import heimlich_and_co.Util.ListHelpers;
+import heimlich_and_co.actions.*;
+import heimlich_and_co.cards.HeimlichAndCoCard;
+import heimlich_and_co.enums.Agent;
+import heimlich_and_co.enums.HeimlichAndCoPhase;
+import heimlich_and_co.factories.HeimlichAndCoCardStackFactory;
+import heimlich_and_co.util.CardStack;
+import heimlich_and_co.util.ListHelpers;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
 import at.ac.tuwien.ifs.sge.game.Game;
 

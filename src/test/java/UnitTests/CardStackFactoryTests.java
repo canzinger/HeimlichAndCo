@@ -1,8 +1,8 @@
 package UnitTests;
 
-import heimlich_and_co.Cards.HeimlichAndCoCard;
-import heimlich_and_co.Factories.HeimlichAndCoCardStackFactory;
-import heimlich_and_co.Util.CardStack;
+import heimlich_and_co.cards.HeimlichAndCoCard;
+import heimlich_and_co.factories.HeimlichAndCoCardStackFactory;
+import heimlich_and_co.util.CardStack;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
