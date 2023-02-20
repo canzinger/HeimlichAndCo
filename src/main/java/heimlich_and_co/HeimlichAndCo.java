@@ -196,7 +196,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             this.cards = null;
             this.cardStack = null;
         }
-        this.phase = HeimlichAndCoPhase.DieRollPhase;
+        this.phase = HeimlichAndCoPhase.DIE_ROLL_PHASE;
         this.allowCustomDieRolls = false;
     }
 
@@ -219,10 +219,10 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         handleCardsAfterAction(action, boardBeforeAction);
 
         phase = getNextPhase(action, board.scoringTriggered());
-        if (phase == HeimlichAndCoPhase.SafeMovePhase) {
+        if (phase == HeimlichAndCoPhase.SAFE_MOVE_PHASE) {
             currentPlayer = currentTurnPlayer;
             board.awardPoints();
-        } else if (phase == HeimlichAndCoPhase.DieRollPhase) {
+        } else if (phase == HeimlichAndCoPhase.DIE_ROLL_PHASE) {
             turnFinished();
         }
     }
@@ -448,18 +448,18 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             return new HashSet<>();
         }
         switch (phase) {
-            case DieRollPhase:
+            case DIE_ROLL_PHASE:
                 return HeimlichAndCoDieRollAction.getPossibleActions(allowCustomDieRolls, board.getDieFaces());
-            case AgentMovePhase:
+            case AGENT_MOVE_PHASE:
                 return HeimlichAndCoAgentMoveAction.getPossibleActions(board, withCards);
-            case CardPlayPhase:
+            case CARD_PLAY_PHASE:
                 Set<HeimlichAndCoAction> cardActions = new HashSet<>();
                 for (HeimlichAndCoCard card : cards.get(currentPlayer)) {
                     cardActions.addAll(HeimlichAndCoCardAction.getPossibleActions(board, card));
                 }
                 cardActions.add(HeimlichAndCoCardAction.getSkipCardAction());
                 return cardActions;
-            case SafeMovePhase:
+            case SAFE_MOVE_PHASE:
                 return HeimlichAndCoSafeMoveAction.getPossibleActions(board);
             default:
                 throw new IllegalStateException("The game is in a state it should not be in");
@@ -568,8 +568,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @return the phase the game should enter
      */
     private HeimlichAndCoPhase getNextPhaseAfterDieRoll() {
-        if (phase == HeimlichAndCoPhase.DieRollPhase) {
-            return HeimlichAndCoPhase.AgentMovePhase;
+        if (phase == HeimlichAndCoPhase.DIE_ROLL_PHASE) {
+            return HeimlichAndCoPhase.AGENT_MOVE_PHASE;
         } else {
             throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
         }
@@ -582,16 +582,16 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @return the phase the game should enter
      */
     private HeimlichAndCoPhase getNextPhaseAfterAgentMove(boolean scoreTriggered) {
-        if (this.phase != HeimlichAndCoPhase.AgentMovePhase) {
+        if (this.phase != HeimlichAndCoPhase.AGENT_MOVE_PHASE) {
             throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
         }
         if (this.withCards) {
-            return HeimlichAndCoPhase.CardPlayPhase;
+            return HeimlichAndCoPhase.CARD_PLAY_PHASE;
         } else {
             if (scoreTriggered) {
-                return HeimlichAndCoPhase.SafeMovePhase;
+                return HeimlichAndCoPhase.SAFE_MOVE_PHASE;
             } else {
-                return HeimlichAndCoPhase.DieRollPhase;
+                return HeimlichAndCoPhase.DIE_ROLL_PHASE;
             }
         }
     }
@@ -607,17 +607,17 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (action.isSkipCardAction()) {
             if (playersSkippedInARowDuringCardPhase == numberOfPLayers) {
                 if (scoreTriggered) {
-                    return HeimlichAndCoPhase.SafeMovePhase;
+                    return HeimlichAndCoPhase.SAFE_MOVE_PHASE;
                 } else {
-                    return HeimlichAndCoPhase.DieRollPhase;
+                    return HeimlichAndCoPhase.DIE_ROLL_PHASE;
                 }
             } else if (playersSkippedInARowDuringCardPhase > numberOfPLayers) {
                 throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
             } else {
-                return HeimlichAndCoPhase.CardPlayPhase;
+                return HeimlichAndCoPhase.CARD_PLAY_PHASE;
             }
         } else {
-            return HeimlichAndCoPhase.CardPlayPhase;
+            return HeimlichAndCoPhase.CARD_PLAY_PHASE;
         }
     }
 
@@ -627,8 +627,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * @return the phase the game should enter
      */
     private HeimlichAndCoPhase getNextPhaseAfterSafeMoveAction() {
-        if (phase == HeimlichAndCoPhase.SafeMovePhase) {
-            return HeimlichAndCoPhase.DieRollPhase;
+        if (phase == HeimlichAndCoPhase.SAFE_MOVE_PHASE) {
+            return HeimlichAndCoPhase.DIE_ROLL_PHASE;
         } else {
             throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
         }
