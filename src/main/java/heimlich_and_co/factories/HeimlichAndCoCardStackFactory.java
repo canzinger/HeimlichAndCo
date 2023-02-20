@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 public class HeimlichAndCoCardStackFactory {
 
+    private HeimlichAndCoCardStackFactory() {}
+
     /**
      * Creates a new CardStack instance with all cards that are in a card stack in the traditional HeimlichAndCo game.
      * Also shuffles the stack.
