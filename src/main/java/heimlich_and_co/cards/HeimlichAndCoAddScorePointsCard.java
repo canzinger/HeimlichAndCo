@@ -46,9 +46,7 @@ public class HeimlichAndCoAddScorePointsCard extends HeimlichAndCoCard {
                 continue;
             }
             for (int j = i + 1; j < agents.length; j++) {
-                if (scores.get(agents[j]) >= 40) {
-                    continue;
-                } else {
+                if (scores.get(agents[j]) < 40) {
                     actions.add(new HeimlichAndCoCardAction(this, new Agent[]{agents[i], agents[j]}, 0));
                 }
             }
@@ -59,6 +57,21 @@ public class HeimlichAndCoAddScorePointsCard extends HeimlichAndCoCard {
     @Override
     public int hashCode() {
         return cardSpecification.hashCode() * 41;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (HeimlichAndCoAddScorePointsCard.class == obj.getClass()) {
+            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
+        } else {
+            return false;
+        }
     }
 
     public String toString() {

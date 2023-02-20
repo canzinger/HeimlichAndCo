@@ -13,6 +13,8 @@ import java.util.*;
  */
 public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
 
+    private static final String ILLEGAL_TYPE_MESSAGE = "Invalid type for a Heimlich and Co Card";
+
     /**
      * Creates a new HeimlichAndCoAddScorePointCard with the given card specification
      *
@@ -53,7 +55,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
             case 5:
                 return getPossibleActionsType5(board);
             case 6:
-                return getPossibleActionsType6(board);
+                return getPossibleActionsType6();
             case 7:
                 return getPossibleActionsType7(board);
             case 8:
@@ -65,13 +67,28 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
             case 11:
                 return getPossibleActionsType11(board);
             default:
-                throw new IllegalStateException("Invalid type for a Heimlich and Co Card");
+                throw new IllegalStateException(ILLEGAL_TYPE_MESSAGE);
         }
     }
 
     @Override
     public int hashCode() {
         return cardSpecification.hashCode() * 47;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (HeimlichAndCoMoveAgentsCard.class == obj.getClass()) {
+            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
+        } else {
+            return false;
+        }
     }
 
     public String toString() {
@@ -101,7 +118,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
             case 11:
                 return "Move an agent of your choice to the safe (Will trigger scoring).";
             default:
-                throw new IllegalStateException("Invalid type for a Heimlich and Co Card");
+                throw new IllegalStateException(ILLEGAL_TYPE_MESSAGE);
         }
     }
 
@@ -154,7 +171,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
                 applyType11(board, agents[0]);
                 break;
             default:
-                throw new IllegalStateException("Invalid type for a Heimlich and Co Card");
+                throw new IllegalStateException(ILLEGAL_TYPE_MESSAGE);
         }
     }
 
@@ -336,7 +353,7 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         return actions;
     }
 
-    private Set<HeimlichAndCoCardAction> getPossibleActionsType6(HeimlichAndCoBoard board) {
+    private Set<HeimlichAndCoCardAction> getPossibleActionsType6() {
         Set<HeimlichAndCoCardAction> actions = new HashSet<>();
         actions.add(new HeimlichAndCoCardAction(this, null, 0));
         return actions;

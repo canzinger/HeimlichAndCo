@@ -12,27 +12,27 @@ public class HeimlichAndCoCardSpecification {
     /**
      * Minimum number of agents needed to play the card.
      */
-    public int minNumberOfAgents;
+    public final int minNumberOfAgents;
     /**
      * Maximum number of agents allowed when playing the card.
      */
-    public int maxNumberOfAgents;
+    public final int maxNumberOfAgents;
 
     /**
      * Whether a number is needed when playing the card.
      */
-    public boolean numberNeeded;
+    public final boolean numberNeeded;
 
     /**
      * The type of the card.
      * Currently, only relevant for the MoveAgentsCard.
      */
-    public int type;
+    public final int type;
 
     /**
      * Whether the order of the agents given to a card when applying it makes a difference.
      */
-    public boolean agentsOrderInvariant;
+    public final boolean agentsOrderInvariant;
 
     /**
      * Creates a new HeimlichAndCoCardSpecification instance with the given values.

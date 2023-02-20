@@ -53,6 +53,21 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
         return cardSpecification.hashCode() * 53;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (HeimlichAndCoMoveSafeCard.class == obj.getClass()) {
+            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
+        } else {
+            return false;
+        }
+    }
+
     public String toString() {
         return "MoveSafeCard: Move the safe in a building of your choice.";
     }

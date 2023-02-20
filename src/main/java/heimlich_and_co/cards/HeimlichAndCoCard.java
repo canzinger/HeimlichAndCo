@@ -20,7 +20,7 @@ public abstract class HeimlichAndCoCard {
      *
      * @param cardSpecification card specification for the new card
      */
-    public HeimlichAndCoCard(HeimlichAndCoCardSpecification cardSpecification) {
+    protected HeimlichAndCoCard(HeimlichAndCoCardSpecification cardSpecification) {
         if (cardSpecification == null) {
             throw new IllegalArgumentException("Card Specification must not be null;");
         }
@@ -38,6 +38,8 @@ public abstract class HeimlichAndCoCard {
     public abstract Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board);
 
     public abstract int hashCode();
+
+    public abstract boolean equals(Object obj);
 
     public abstract String toString();
 
@@ -73,17 +75,6 @@ public abstract class HeimlichAndCoCard {
             }
         }
         applyCardSpecific(board, agents, number);
-    }
-
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (this.getClass().equals(obj.getClass())) {
-            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -124,9 +115,6 @@ public abstract class HeimlichAndCoCard {
                 return false;
             }
         }
-        if (!cardSpecification.numberNeeded && number!= 0) {
-            return false;
-        }
-        return true;
+        return cardSpecification.numberNeeded || number == 0;
     }
 }
