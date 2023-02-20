@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'at.ac.tuwien.ifs.sge'
-version '0.1.0'
+version '0.2.0'
 
 sourceCompatibility = 1.11
 
@@ -27,8 +27,7 @@ dependencies {
 jar {
     manifest {
         attributes 'Sge-Type': 'game'
-        attributes 'Game-Class': 'HeimlichAndCo.HeimlichAndCo'
-        attributes 'Main-Class': 'engine.HeimlichAndCoMapGenerator'
+        attributes 'Game-Class': 'heimlich_and_co.HeimlichAndCo'
     }
 }
 
