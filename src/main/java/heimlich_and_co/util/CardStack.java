@@ -35,7 +35,7 @@ public class CardStack<T> {
      * @return the drawn card
      */
     public T drawCard() {
-        if (cards.size() == 0) {
+        if (cards.isEmpty()) {
             return null;
         }
         T returnCard = cards.get(0);
@@ -58,6 +58,6 @@ public class CardStack<T> {
      * Returns whether the stack is empty
      */
     public boolean isEmpty() {
-        return cards.size() == 0;
+        return cards.isEmpty();
     }
 }

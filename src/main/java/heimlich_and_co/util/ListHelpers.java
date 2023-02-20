@@ -8,6 +8,8 @@ import java.util.List;
 
 public class ListHelpers {
 
+    private ListHelpers() {}
+
     /**
      * Creates a deep copy of a List of ActionRecord<HeimlichAndCoAction> by using clone on the respective actions.
      *
