@@ -25,8 +25,18 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
         }
     }
 
-    public HeimlichAndCoMoveSafeCard clone() {
-        return new HeimlichAndCoMoveSafeCard(cardSpecification.clone());
+    /**
+     * Creates a deep copy of the given card.
+     *
+     * @param card card to copy
+     */
+    public HeimlichAndCoMoveSafeCard(HeimlichAndCoMoveSafeCard card) {
+        this(card.cardSpecification);
+    }
+
+    @Override
+    public HeimlichAndCoMoveSafeCard deepCopy() {
+        return new HeimlichAndCoMoveSafeCard(this);
     }
 
     /**

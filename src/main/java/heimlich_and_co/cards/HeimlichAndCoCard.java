@@ -24,10 +24,15 @@ public abstract class HeimlichAndCoCard {
         if (cardSpecification == null) {
             throw new IllegalArgumentException("Card Specification must not be null;");
         }
-        this.cardSpecification = cardSpecification.clone();
+        this.cardSpecification = new HeimlichAndCoCardSpecification(cardSpecification);
     }
 
-    public abstract HeimlichAndCoCard clone();
+    /**
+     * Creates a deep copy of this card.
+     *
+     * @return an identical deep copy
+     */
+    public abstract HeimlichAndCoCard deepCopy();
 
     /**
      * Calculates all possible actions for a board and this card.

@@ -38,6 +38,16 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
     }
 
     /**
+     * Creates a deep copy of the given action.
+     *
+     * @param action action to copy
+     */
+    public HeimlichAndCoDieRollAction(HeimlichAndCoDieRollAction action) {
+        this.randomRoll = action.randomRoll;
+        this.dieRoll = action.dieRoll;
+    }
+
+    /**
      * Calculates the possible die roll actions depending on whether custom rolls are allowed and the die faces that can be rolled.
      *
      * @param allowCustomRoll whether custom die rolls are allowed
@@ -81,12 +91,9 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
         }
     }
 
-    public HeimlichAndCoDieRollAction clone() {
-        if (randomRoll) {
-            return new HeimlichAndCoDieRollAction();
-        } else {
-            return new HeimlichAndCoDieRollAction(dieRoll);
-        }
+    @Override
+    public HeimlichAndCoDieRollAction deepCopy() {
+        return new HeimlichAndCoDieRollAction(this);
     }
 
     @Override

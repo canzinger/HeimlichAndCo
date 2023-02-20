@@ -27,8 +27,13 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         }
     }
 
-    public HeimlichAndCoMoveAgentsCard clone() {
-        return new HeimlichAndCoMoveAgentsCard(cardSpecification.clone());
+    /**
+     * Creates a deep copy of the given card
+     *
+     * @param card card to copy
+     */
+    public HeimlichAndCoMoveAgentsCard(HeimlichAndCoMoveAgentsCard card) {
+        this(card.cardSpecification);
     }
 
     /**
@@ -69,6 +74,11 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
             default:
                 throw new IllegalStateException(ILLEGAL_TYPE_MESSAGE);
         }
+    }
+
+    @Override
+    public HeimlichAndCoMoveAgentsCard deepCopy() {
+        return new HeimlichAndCoMoveAgentsCard(this);
     }
 
     @Override

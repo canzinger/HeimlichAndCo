@@ -19,7 +19,7 @@ public class ListHelpers {
     public static LinkedList<ActionRecord<HeimlichAndCoAction>> deepCopyActionRecordList(List<ActionRecord<HeimlichAndCoAction>> list) {
         LinkedList<ActionRecord<HeimlichAndCoAction>> newList = new LinkedList<>();
         for (ActionRecord<HeimlichAndCoAction> actionRecord : list) {
-            newList.add(new ActionRecord<>(actionRecord.getPlayer(), actionRecord.getAction().clone()));
+            newList.add(new ActionRecord<>(actionRecord.getPlayer(), actionRecord.getAction().deepCopy()));
         }
         return newList;
     }

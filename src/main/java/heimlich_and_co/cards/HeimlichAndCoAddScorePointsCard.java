@@ -26,8 +26,16 @@ public class HeimlichAndCoAddScorePointsCard extends HeimlichAndCoCard {
         }
     }
 
-    public HeimlichAndCoAddScorePointsCard clone() {
-        return new HeimlichAndCoAddScorePointsCard(cardSpecification.clone());
+    public HeimlichAndCoAddScorePointsCard(HeimlichAndCoAddScorePointsCard card) {
+        super(card.cardSpecification);
+        if (cardSpecification.type != 0) {
+            throw new IllegalArgumentException("Type in Card Specification must be 0 for this type of Card");
+        }
+    }
+
+    @Override
+    public HeimlichAndCoAddScorePointsCard deepCopy() {
+        return new HeimlichAndCoAddScorePointsCard(this);
     }
 
     /**

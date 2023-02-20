@@ -45,7 +45,7 @@ class HeimlichAndCoBoardTests {
         HeimlichAndCoBoard board = new HeimlichAndCoBoard(7);
         board.moveSafe(5);
         board.moveAgent(board.getAgents()[0], 6);
-        HeimlichAndCoBoard newBoard = board.clone();
+        HeimlichAndCoBoard newBoard = new HeimlichAndCoBoard(board);
 
         Assertions.assertEquals(board.getLastDieRoll(), newBoard.getLastDieRoll());
         Assertions.assertArrayEquals(board.getAgents(), newBoard.getAgents());

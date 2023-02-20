@@ -33,7 +33,7 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
      */
     public HeimlichAndCoCardAction(HeimlichAndCoCard card, Agent[] agents, int number) {
         if (card != null) {
-            this.card = card.clone();
+            this.card = card.deepCopy();
         } else {
             this.card = null;
         }
@@ -43,6 +43,15 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
             this.agents = new Agent[]{};
         }
         this.number = number;
+    }
+
+    /**
+     * Creates a deep copy of the given action.
+     *
+     * @param action action to copy
+     */
+    public HeimlichAndCoCardAction(HeimlichAndCoCardAction action) {
+        this(action.card, action.agents, action.number);
     }
 
     /**
@@ -76,12 +85,9 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
         }
     }
 
-    public HeimlichAndCoCardAction clone() {
-        if (card != null) {
-            return new HeimlichAndCoCardAction(this.card.clone(), agents, number);
-        } else {
-            return new HeimlichAndCoCardAction(null, agents, number);
-        }
+    @Override
+    public HeimlichAndCoCardAction deepCopy() {
+        return new HeimlichAndCoCardAction(this);
 
     }
 

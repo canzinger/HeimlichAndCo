@@ -7,7 +7,11 @@ import java.util.*;
 
 public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
 
-    private final Map<Agent, Integer> agentsMoves;
+    private final EnumMap<Agent, Integer> agentsMoves;
+
+    public HeimlichAndCoAgentMoveAction() {
+        this.agentsMoves = new EnumMap<>(Agent.class);
+    }
 
     /**
      * Creates a new instance of HeimlichAndCoAgentMoveAction with the given moves of agents.
@@ -16,15 +20,24 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
      */
     public HeimlichAndCoAgentMoveAction(Map<Agent, Integer> agentsMoves) {
         if (agentsMoves != null && !agentsMoves.isEmpty()) {
-            this.agentsMoves = new HashMap<>();
-            for(Agent a: agentsMoves.keySet()) {
-                if (agentsMoves.get(a).compareTo(0) > 0) { //only add move if is not 0
-                    this.agentsMoves.put(a, agentsMoves.get(a));
+            this.agentsMoves = new EnumMap<>(Agent.class);
+            for(Map.Entry<Agent, Integer> entry: agentsMoves.entrySet()) {
+                if (entry.getValue().compareTo(0) > 0) {
+                    this.agentsMoves.put(entry.getKey(), entry.getValue());
                 }
             }
         } else {
-            this.agentsMoves = new HashMap<>();
+            this.agentsMoves = new EnumMap<>(Agent.class);
         }
+    }
+
+    /**
+     * Creates a deep copy of the given action.
+     *
+     * @param action action to copy
+     */
+    public HeimlichAndCoAgentMoveAction(HeimlichAndCoAgentMoveAction action) {
+        this(action.agentsMoves);
     }
 
     /**
@@ -34,7 +47,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
      * @return AgentMoveAction that is the No Move Action
      */
     public static HeimlichAndCoAgentMoveAction getNoMoveAction() {
-        return new HeimlichAndCoAgentMoveAction(null);
+        return new HeimlichAndCoAgentMoveAction();
     }
 
     /**
@@ -114,8 +127,9 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         board.moveAgents(agentsMoves);
     }
 
-    public HeimlichAndCoAgentMoveAction clone() {
-        return new HeimlichAndCoAgentMoveAction(this.agentsMoves);
+    @Override
+    public HeimlichAndCoAgentMoveAction deepCopy() {
+        return new HeimlichAndCoAgentMoveAction(this);
     }
 
     @Override
@@ -142,8 +156,8 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     @Override
     public int hashCode() {
         int hashCode = 0;
-        for (Agent a : agentsMoves.keySet()) {
-            hashCode += (a.ordinal() + 37) * agentsMoves.get(a);
+        for (Map.Entry<Agent, Integer> entry: agentsMoves.entrySet()) {
+            hashCode += (entry.getKey().ordinal() + 37) * entry.getValue();
         }
         return hashCode;
     }
@@ -156,8 +170,8 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
      */
     public boolean movesAgentsIntoRuins(HeimlichAndCoBoard board) {
         Map<Agent, Integer> positions = board.getAgentsPositions();
-        for (Agent agent : this.agentsMoves.keySet()) {
-            if ((positions.get(agent) + agentsMoves.get(agent)) % board.getNumberOfFields() == HeimlichAndCoBoard.getRuinsField()) {
+        for (Map.Entry<Agent, Integer> entry: this.agentsMoves.entrySet()) {
+            if ((positions.get(entry.getKey()) + entry.getValue()) % board.getNumberOfFields() == HeimlichAndCoBoard.getRuinsField()) {
                 return true;
             }
         }
@@ -196,7 +210,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
         if (playingAgents.length != agentsMoves.length) {
             throw new IllegalArgumentException("There must be the same amount of agents and numbers given.");
         }
-        Map<Agent, Integer> agentsMovesMap = new HashMap<>();
+        EnumMap<Agent, Integer> agentsMovesMap = new EnumMap<>(Agent.class);
         for (int i = 0; i < agentsMoves.length; i++) {
             if (agentsMoves[i] > 0) {
                 agentsMovesMap.put(playingAgents[i], agentsMoves[i]);

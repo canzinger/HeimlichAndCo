@@ -45,10 +45,8 @@ public class HeimlichAndCoCardSpecification {
         this.agentsOrderInvariant = agentsOrderInvariant;
     }
 
-    @Override
-    public HeimlichAndCoCardSpecification clone() {
-        return new HeimlichAndCoCardSpecification(this.minNumberOfAgents, this.maxNumberOfAgents,
-                this.numberNeeded, this.type, this.agentsOrderInvariant);
+    public HeimlichAndCoCardSpecification(HeimlichAndCoCardSpecification spec) {
+        this(spec.minNumberOfAgents, spec.maxNumberOfAgents, spec.numberNeeded, spec.type, spec.agentsOrderInvariant);
     }
 
     @Override

@@ -109,7 +109,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
                 HeimlichAndCoCard[] oldCards = game.cardStack.getCards().toArray(new HeimlichAndCoCard[]{});
                 List<HeimlichAndCoCard> newCards = new LinkedList<>();
                 for (HeimlichAndCoCard oldCard : oldCards) {
-                    newCards.add(oldCard.clone());
+                    newCards.add(oldCard.deepCopy());
                 }
                 cardStack = new CardStack<>(newCards);
             }
@@ -175,7 +175,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (board == null) {
             this.board = new HeimlichAndCoBoard(numberOfPLayers + getNumberOfDummyAgents(numberOfPLayers));
         } else {
-            this.board = board.clone();
+            this.board = new HeimlichAndCoBoard(board);
         }
         if (playersToAgentsMap == null) {
             this.playersToAgentsMap = createPlayersToAgentsMap(this.numberOfPLayers);
@@ -212,7 +212,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             throw new IllegalArgumentException("Invalid Action given");
         }
 
-        HeimlichAndCoBoard boardBeforeAction = this.board.clone();
+        HeimlichAndCoBoard boardBeforeAction = new HeimlichAndCoBoard(this.board);
         action.applyAction(this.board);
         this.actionRecords.addLast(new ActionRecord<>(currentPlayer, action));
 

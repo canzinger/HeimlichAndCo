@@ -19,6 +19,15 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
     }
 
     /**
+     * Creates a deep copy of the given action.
+     *
+     * @param action action to copy
+     */
+    public HeimlichAndCoSafeMoveAction(HeimlichAndCoSafeMoveAction action) {
+        this(action.newSafeLocation);
+    }
+
+    /**
      * Calculates the possible Safe Move Actions depending on a board. Will not return the action to keep the safe on
      * the location that it is currently on (i.e. that action is not allowed).
      *
@@ -46,8 +55,9 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
         board.moveSafe(newSafeLocation);
     }
 
-    public HeimlichAndCoSafeMoveAction clone() {
-        return new HeimlichAndCoSafeMoveAction(newSafeLocation);
+    @Override
+    public HeimlichAndCoSafeMoveAction deepCopy() {
+        return new HeimlichAndCoSafeMoveAction(this);
     }
 
     @Override

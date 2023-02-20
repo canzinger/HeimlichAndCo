@@ -90,16 +90,31 @@ public class HeimlichAndCoBoard {
             throw new IllegalArgumentException("Invalid amount of playing agents, must be between 5 and 7");
         }
         this.agents = agentsPositions.keySet().toArray(new Agent[0]);
-        this.agentsPositions = new HashMap<>(agentsPositions);
+        this.agentsPositions = new EnumMap<>(agentsPositions);
         if (scores != null && scores.size() != 0) {
             if (!agentsPositions.keySet().equals(scores.keySet())) {
                 throw new IllegalArgumentException("Scores and agentsPositions must have the same key set");
             }
-            this.scores = new HashMap<>(scores);
+            this.scores = new EnumMap<>(scores);
         }
         this.safePosition = 7;
         this.die = new Die();
         scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap();
+    }
+
+    /**
+     * Creates a deep copy of the board.
+     *
+     * @param board board to copy
+     */
+    public HeimlichAndCoBoard(HeimlichAndCoBoard board) {
+        this(board.agents);
+        this.lastDieRoll = board.lastDieRoll;
+        this.safePosition = board.safePosition;
+        this.agentsPositions = new EnumMap<>(board.agentsPositions);
+        this.scores = new EnumMap<>(board.scores);
+        System.arraycopy(board.agents, 0, this.agents, 0, board.agents.length);
+        this.scoringTriggeredForAgent = new EnumMap<>(board.scoringTriggeredForAgent);
     }
 
     //endregion
@@ -134,18 +149,6 @@ public class HeimlichAndCoBoard {
             scores.replace(a, awardedPoints + oldPoints);
         }
         scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap();
-    }
-
-    @Override
-    public HeimlichAndCoBoard clone() {
-        HeimlichAndCoBoard newBoard = new HeimlichAndCoBoard(this.agents);
-        newBoard.lastDieRoll = this.lastDieRoll;
-        newBoard.safePosition = this.safePosition;
-        newBoard.agentsPositions = new HashMap<>(this.agentsPositions);
-        newBoard.scores = new HashMap<>(this.scores);
-        System.arraycopy(this.agents, 0, newBoard.agents, 0, this.agents.length);
-        newBoard.scoringTriggeredForAgent = new HashMap<>(this.scoringTriggeredForAgent);
-        return newBoard;
     }
 
     /**
@@ -207,8 +210,8 @@ public class HeimlichAndCoBoard {
      * @param agentsMoves Map denoting the amount of fields certain agents should be moved
      */
     public void moveAgents(Map<Agent, Integer> agentsMoves) {
-        for (Agent a : agentsMoves.keySet()) {
-            moveAgent(a, agentsMoves.get(a));
+        for(Map.Entry<Agent, Integer> entry: agentsMoves.entrySet()) {
+            moveAgent(entry.getKey(), entry.getValue());
         }
     }
 
@@ -240,8 +243,8 @@ public class HeimlichAndCoBoard {
      * @return whether scoring was triggered
      */
     public boolean scoringTriggered() {
-        for (Agent a : scoringTriggeredForAgent.keySet()) {
-            if (scoringTriggeredForAgent.get(a)) {
+        for (Map.Entry<Agent, Boolean> entry: scoringTriggeredForAgent.entrySet()) {
+            if (Boolean.TRUE.equals(entry.getValue())) {
                 return true;
             }
         }
@@ -452,7 +455,7 @@ public class HeimlichAndCoBoard {
      * @return method with an entry for each playing agent with value false
      */
     private Map<Agent, Boolean> getNewScoringTriggeredForAgentMap() {
-        Map<Agent, Boolean> map = new HashMap<>();
+        Map<Agent, Boolean> map = new EnumMap<>(Agent.class);
         for (Agent a : agents) {
             map.put(a, false);
         }
@@ -504,7 +507,7 @@ public class HeimlichAndCoBoard {
      * @return Map with an entry of 0 for each agent
      */
     private Map<Agent, Integer> getAgentMapWithZeros(Agent[] agents) {
-        Map<Agent, Integer> map = new HashMap<>();
+        Map<Agent, Integer> map = new EnumMap<>(Agent.class);
         for (Agent a : agents) {
             map.put(a, 0);
         }

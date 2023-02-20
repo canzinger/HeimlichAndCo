@@ -11,7 +11,12 @@ public interface HeimlichAndCoAction {
      */
     void applyAction(HeimlichAndCoBoard board);
 
-    HeimlichAndCoAction clone();
+    /**
+     * Creates a deep copy of this action.
+     *
+     * @return an identical deep copy
+     */
+    HeimlichAndCoAction deepCopy();
 
     /**
      * Checks whether the given object is equal to this action. Must take semantics into account where some actions
