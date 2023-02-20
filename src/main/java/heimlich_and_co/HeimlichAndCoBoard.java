@@ -1,7 +1,7 @@
-package heimlichAndCo;
+package heimlich_and_co;
 
-import heimlichAndCo.Enums.Agent;
-import heimlichAndCo.Util.Die;
+import heimlich_and_co.Enums.Agent;
+import heimlich_and_co.Util.Die;
 
 import java.util.*;
 
@@ -10,7 +10,13 @@ public class HeimlichAndCoBoard {
     /**
      * the number of fields of the board
      */
-    private final static int NUMBER_OF_FIELDS = 12;
+    private static final int NUMBER_OF_FIELDS = 12;
+
+    /**
+     * The ruins field
+     */
+    private static final int RUINS_FIELD = 11;
+
     /**
      * saves which agents are in play.
      */
@@ -106,13 +112,13 @@ public class HeimlichAndCoBoard {
     public Map<Integer, Agent[]> agentsOnFields() {
         Map<Integer, Agent[]> agentsMap = new HashMap<>();
         for (int i = 0; i < NUMBER_OF_FIELDS; i++) {
-            List<Agent> agents = new LinkedList<>();
+            List<Agent> agentsOnField = new LinkedList<>();
             for (Agent a : this.agents) {
                 if (agentsPositions.get(a) == i) {
-                    agents.add(a);
+                    agentsOnField.add(a);
                 }
             }
-            agentsMap.put(i, agents.toArray(new Agent[0]));
+            agentsMap.put(i, agentsOnField.toArray(new Agent[0]));
         }
         return agentsMap;
     }
@@ -460,13 +466,8 @@ public class HeimlichAndCoBoard {
         return NUMBER_OF_FIELDS;
     }
 
-    /**
-     * Returns the fieldId of the ruins
-     *
-     * @return the fieldId of the ruins
-     */
-    public int getRuinsField() {
-        return 11;
+    public static int getRuinsField() {
+        return RUINS_FIELD;
     }
 
     public int getSafePosition() {

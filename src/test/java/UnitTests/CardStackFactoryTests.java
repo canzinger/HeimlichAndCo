@@ -1,12 +1,12 @@
 package UnitTests;
 
-import HeimlichAndCo.Cards.HeimlichAndCoCard;
-import HeimlichAndCo.Factories.HeimlichAndCoCardStackFactory;
-import HeimlichAndCo.Util.CardStack;
+import heimlich_and_co.Cards.HeimlichAndCoCard;
+import heimlich_and_co.Factories.HeimlichAndCoCardStackFactory;
+import heimlich_and_co.Util.CardStack;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CardStackFactoryTests {
+class CardStackFactoryTests {
 
     //region newInstance() tests
 

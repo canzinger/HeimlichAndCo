@@ -1,4 +1,4 @@
-package heimlichAndCo.Cards;
+package heimlich_and_co.Cards;
 
 import java.util.Objects;
 

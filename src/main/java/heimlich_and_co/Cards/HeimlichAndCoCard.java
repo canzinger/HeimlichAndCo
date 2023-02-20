@@ -1,8 +1,8 @@
-package heimlichAndCo.Cards;
+package heimlich_and_co.Cards;
 
-import heimlichAndCo.Actions.HeimlichAndCoCardAction;
-import heimlichAndCo.Enums.Agent;
-import heimlichAndCo.HeimlichAndCoBoard;
+import heimlich_and_co.Actions.HeimlichAndCoCardAction;
+import heimlich_and_co.Enums.Agent;
+import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -10,7 +10,7 @@ import java.util.Set;
 public abstract class HeimlichAndCoCard {
 
     /**
-     * The card specification each heimlich_and_co card must have determining how many agents, numbers are needed and the
+     * The card specification each HeimlichAndCo card must have determining how many agents, numbers are needed and the
      * type of the card.
      */
     protected final HeimlichAndCoCardSpecification cardSpecification;

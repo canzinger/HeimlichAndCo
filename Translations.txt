@@ -1,7 +1,7 @@
 Wertungsstein = score marker
 
 
-java -jar sge-1.0.2-exe.jar match build/libs/HeimlichAndCo-1.0-SNAPSHOT-exe.jar match build/libs/sge-randomagent-1.0.1.jar build/libs/sge-randomagent-1.0.1.jar
+java -jar sge-1.0.2-exe.jar match build/libs/heimlich_and_co-1.0-SNAPSHOT-exe.jar match build/libs/sge-randomagent-1.0.1.jar build/libs/sge-randomagent-1.0.1.jar
 
 Test naming conventions:
 Given_Preconditions_When_StateUnderTest_Then_ExpectedBehavior:

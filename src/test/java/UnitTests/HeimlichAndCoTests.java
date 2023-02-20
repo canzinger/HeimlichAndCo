@@ -1,45 +1,33 @@
 package UnitTests;
 
-import HeimlichAndCo.HeimlichAndCo;
+import heimlich_and_co.HeimlichAndCo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class HeimlichAndCoTests {
+class HeimlichAndCoTests {
 
     //region Constructor tests
 
-    @Test
-    public void given_Nothing_UsingBoardConstructorWithBoardEquals_1_ThenGameWithCards() {
-        HeimlichAndCo game = new HeimlichAndCo("1", 2);
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "Cards", "cards"})
+    void given_Nothing_UsingBoardConstructorWithBoardEquals_SpecifiedValue_ThenWithCards(String board) {
+        HeimlichAndCo game = new HeimlichAndCo(board, 2);
         Assertions.assertTrue(game.isWithCards());
     }
 
-    @Test
-    public void given_Nothing_UsingBoardConstructorWithBoardEquals_Cards_ThenGameWithCards() {
-        HeimlichAndCo game = new HeimlichAndCo("Cards", 2);
-        Assertions.assertTrue(game.isWithCards());
-    }
-
-    @Test
-    public void given_Nothing_UsingBoardConstructorWithBoardEquals_cards_ThenGameWithCards() {
-        HeimlichAndCo game = new HeimlichAndCo("cards", 2);
-        Assertions.assertTrue(game.isWithCards());
-    }
-
-    @Test
-    public void given_Nothing_UsingBoardConstructorWithBoardNull_ThenGameWithoutCards() {
-        HeimlichAndCo game = new HeimlichAndCo(null, 2);
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"0", "elephant", "Not Specified"})
+    void given_Nothing_UsingBoardConstructorWithBoardEquals_NonSpecifiedValue_ThenWithoutCards(String board) {
+        HeimlichAndCo game = new HeimlichAndCo(board, 2);
         Assertions.assertFalse(game.isWithCards());
     }
 
     @Test
-    public void given_Nothing_UsingBoardConstructorWithBoardEquals_0_ThenGameWithoutCards() {
-        HeimlichAndCo game = new HeimlichAndCo("0", 2);
-        Assertions.assertFalse(game.isWithCards());
-    }
-
-    @Test
-    public void given_Nothing_UsingBoardConstructorWithBoardEquals_NonSpecifiedValue_ThenGameWithoutCards() {
+    void given_Nothing_UsingBoardConstructorWithBoardEquals_NonSpecifiedValue_ThenGameWithoutCards() {
         HeimlichAndCo game = new HeimlichAndCo("NotSpecified", 2);
         Assertions.assertFalse(game.isWithCards());
     }
@@ -47,7 +35,7 @@ public class HeimlichAndCoTests {
     //endregion
 
     @Test
-    public void givenValidInstance_getGame_ReturnsDeepCopyOfGame() {
+    void givenValidInstance_getGame_ReturnsDeepCopyOfGame() {
         HeimlichAndCo game = new HeimlichAndCo("1", 2);
         HeimlichAndCo copiedGame = (HeimlichAndCo) game.getGame();
 
@@ -80,7 +68,7 @@ public class HeimlichAndCoTests {
 
 
     @Test
-    public void givenValidInstance_getGame_ReturnsDeepCopyOfGameWithInformationStrippedForCurrentPlayer() {
+    void givenValidInstance_getGame_ReturnsDeepCopyOfGameWithInformationStrippedForCurrentPlayer() {
         HeimlichAndCo game = new HeimlichAndCo("1",2);
         HeimlichAndCo copiedGame = (HeimlichAndCo) game.getGame();
 
@@ -93,7 +81,7 @@ public class HeimlichAndCoTests {
     }
 
     @Test
-    public void givenValidInstance_getGameWithPlayer_ReturnsDeepCopyOfGameWithInformationStrippedForGivenPlayer() {
+    void givenValidInstance_getGameWithPlayer_ReturnsDeepCopyOfGameWithInformationStrippedForGivenPlayer() {
         HeimlichAndCo game = new HeimlichAndCo("1", 2);
         HeimlichAndCo copiedGame = (HeimlichAndCo) game.getGame(1);
         Assertions.assertEquals(game.getCurrentPlayer(), copiedGame.getCurrentPlayer());

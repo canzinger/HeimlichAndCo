@@ -1,12 +1,12 @@
 package UnitTests;
 
-import HeimlichAndCo.Enums.Agent;
-import HeimlichAndCo.HeimlichAndCoBoard;
+import heimlich_and_co.Enums.Agent;
+import heimlich_and_co.HeimlichAndCoBoard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 
-public class HeimlichAndCoBoardTests {
+class HeimlichAndCoBoardTests {
 
     //region Constructor tests
 
@@ -69,7 +69,7 @@ public class HeimlichAndCoBoardTests {
         Map<Agent, Integer> scores = newBoard.getScores();
         scores.replace(board.getAgents()[0], 100);
         Assertions.assertEquals(board.getScores().get(board.getAgents()[0]), oldScore);
-        Assertions.assertEquals(newBoard.getScores().get(newBoard.getAgents()[0]), 100);
+        Assertions.assertEquals(100, newBoard.getScores().get(newBoard.getAgents()[0]));
 
     }
 

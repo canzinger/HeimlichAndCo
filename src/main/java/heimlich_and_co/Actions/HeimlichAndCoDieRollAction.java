@@ -1,6 +1,6 @@
-package heimlichAndCo.Actions;
+package heimlich_and_co.Actions;
 
-import heimlichAndCo.HeimlichAndCoBoard;
+import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.HashSet;
 import java.util.Set;

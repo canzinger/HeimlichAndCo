@@ -1,14 +1,14 @@
-package heimlichAndCo.Factories;
+package heimlich_and_co.Factories;
 
-import heimlichAndCo.Cards.*;
-import heimlichAndCo.Util.CardStack;
+import heimlich_and_co.Cards.*;
+import heimlich_and_co.Util.CardStack;
 
 import java.util.LinkedList;
 
 public class HeimlichAndCoCardStackFactory {
 
     /**
-     * Creates a new CardStack instance with all cards that are in a card stack in the traditional heimlich_and_co game.
+     * Creates a new CardStack instance with all cards that are in a card stack in the traditional HeimlichAndCo game.
      * Also shuffles the stack.
      *
      * @return a new CardStack instance filled with cards

@@ -1,4 +1,4 @@
-package heimlichAndCo.Enums;
+package heimlich_and_co.Enums;
 
 public enum HeimlichAndCoPhase {
     DieRollPhase,

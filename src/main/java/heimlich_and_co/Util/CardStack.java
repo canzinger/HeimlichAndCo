@@ -1,4 +1,4 @@
-package heimlichAndCo.Util;
+package heimlich_and_co.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;

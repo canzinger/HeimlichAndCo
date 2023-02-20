@@ -1,12 +1,12 @@
-package heimlichAndCo;
+package heimlich_and_co;
 
-import heimlichAndCo.Actions.*;
-import heimlichAndCo.Cards.HeimlichAndCoCard;
-import heimlichAndCo.Enums.Agent;
-import heimlichAndCo.Enums.HeimlichAndCoPhase;
-import heimlichAndCo.Factories.HeimlichAndCoCardStackFactory;
-import heimlichAndCo.Util.CardStack;
-import heimlichAndCo.Util.ListHelpers;
+import heimlich_and_co.Actions.*;
+import heimlich_and_co.Cards.HeimlichAndCoCard;
+import heimlich_and_co.Enums.Agent;
+import heimlich_and_co.Enums.HeimlichAndCoPhase;
+import heimlich_and_co.Factories.HeimlichAndCoCardStackFactory;
+import heimlich_and_co.Util.CardStack;
+import heimlich_and_co.Util.ListHelpers;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
 import at.ac.tuwien.ifs.sge.game.Game;
 
@@ -15,10 +15,11 @@ import java.util.*;
 /**
  * The main game class.
  */
-public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoBoard> {
+public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoard> {
 
     private static final int MAXIMUM_NUMBER_OF_PLAYERS = 7;
     private static final int MINIMUM_NUMBER_OF_PLAYERS = 2;
+    private static final String ILLEGAL_STATE_MESSAGE = "The game is in a state it should not be in!";
     private final int numberOfPLayers;
     private final HeimlichAndCoBoard board;
     /**
@@ -57,18 +58,17 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
      */
     private boolean allowCustomDieRolls;
 
-
     /**
-     * Creates a new heimlich_and_co instance with the minimum amount of players needed and without cards.
+     * Creates a new HeimlichAndCo instance with the minimum amount of players needed and without cards.
      */
-    public heimlich_and_co() {
-        this(0, heimlich_and_co.MINIMUM_NUMBER_OF_PLAYERS, null, null, null, false);
+    public HeimlichAndCo() {
+        this(0, HeimlichAndCo.MINIMUM_NUMBER_OF_PLAYERS, null, null, null, false);
     }
 
     /**
-     * Creates a new heimlich_and_co instance with the given amount of players and without cards.
+     * Creates a new HeimlichAndCo instance with the given amount of players and without cards.
      */
-    public heimlich_and_co(int numberOfPLayers) {
+    public HeimlichAndCo(int numberOfPLayers) {
         this(0, numberOfPLayers, null, null, null, false);
     }
 
@@ -82,7 +82,7 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
      * @param game             the game which acts as the basis for the new game
      * @param stripInformation whether to strip non-public information from the new game
      */
-    public heimlich_and_co(heimlich_and_co game, boolean stripInformation) {
+    public HeimlichAndCo(HeimlichAndCo game, boolean stripInformation) {
         this(game.getCurrentPlayer(), game.numberOfPLayers, game.actionRecords, game.board, null, game.withCards);
         phase = game.phase;
         currentTurnPlayer = game.currentTurnPlayer;
@@ -129,23 +129,23 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
      * @param board string indicating whether the game is played with cards
      * @param numberOfPlayers
      */
-    public heimlich_and_co(String board, int numberOfPlayers) {
+    public HeimlichAndCo(String board, int numberOfPlayers) {
         this(0, numberOfPlayers, null, null, null,
                 board != null && (board.equals("1") || board.equals("cards") || board.equals("Cards")));
     }
 
     /**
-     * Creates a new heimlich_and_co instance which is a copy of the game given as a parameter.
+     * Creates a new HeimlichAndCo instance which is a copy of the game given as a parameter.
      * Private information is not stripped.
      *
      * @param game the game which acts as the basis for the new game
      */
-    public heimlich_and_co(heimlich_and_co game) {
+    public HeimlichAndCo(HeimlichAndCo game) {
         this(game, false);
     }
 
     /**
-     * Creates a new heimlich_and_co instance with the given parameters.
+     * Creates a new HeimlichAndCo instance with the given parameters.
      * Acts as the base constructor which all other constructors call.
      *
      * @param currentPlayer      current player
@@ -156,9 +156,9 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
      * @param playersToAgentsMap Map which maps players to agents (can be null)
      * @param withCards          whether the game should be with or without cards
      */
-    public heimlich_and_co(int currentPlayer, int numberOfPLayers,
-                           List<ActionRecord<HeimlichAndCoAction>> actionRecords,
-                           HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards) {
+    public HeimlichAndCo(int currentPlayer, int numberOfPLayers,
+                         List<ActionRecord<HeimlichAndCoAction>> actionRecords,
+                         HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards) {
         if (currentPlayer < 0 || currentPlayer >= numberOfPLayers) {
             throw new IllegalArgumentException("Current player must be a valid player." + currentPlayer);
         }
@@ -212,33 +212,11 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
             throw new IllegalArgumentException("Invalid Action given");
         }
 
-        HeimlichAndCoBoard boardCopy = this.board.clone();
+        HeimlichAndCoBoard boardBeforeAction = this.board.clone();
         action.applyAction(this.board);
         this.actionRecords.addLast(new ActionRecord<>(currentPlayer, action));
 
-        if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
-            if (((HeimlichAndCoAgentMoveAction) action).movesAgentsIntoRuins(boardCopy)) { //check whether action moves agent into ruins and should therefore be awarded a card
-                if (withCards && cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty()) { //maximum of 4 cards per player
-                    cards.get(currentPlayer).add(cardStack.drawCard());
-                }
-            } else if (((HeimlichAndCoAgentMoveAction) action).isNoMoveAction()) { //special case where the player chose to draw a card instead of moving agents
-                if (withCards) { //maximum of 4 cards per player
-                    if (cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty()) {
-                        cards.get(currentPlayer).add(cardStack.drawCard());
-                    }
-                } else {
-                    throw new IllegalArgumentException("An invalid action was given when playing without cards");
-                }
-            }
-        } else if (action.getClass().equals(HeimlichAndCoCardAction.class)) { //need to remove card if one played
-            ((HeimlichAndCoCardAction) action).removePlayedCardFromList(cards.get(currentPlayer));
-            if (((HeimlichAndCoCardAction) action).isSkipCardAction()) {
-                playersSkippedInARowDuringCardPhase++;
-                nextPlayer();
-            } else {
-                playersSkippedInARowDuringCardPhase = 0;
-            }
-        }
+        handleCardsAfterAction(action, boardBeforeAction);
 
         phase = getNextPhase(action, board.scoringTriggered());
         if (phase == HeimlichAndCoPhase.SafeMovePhase) {
@@ -250,10 +228,37 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
     }
 
     /**
+     * Handles assigning and removing cards after an action.
+     *
+     * @param action action taken
+     * @param boardBeforeAction state of the board before the action was applied
+     */
+    private void handleCardsAfterAction(HeimlichAndCoAction action, HeimlichAndCoBoard boardBeforeAction) {
+        if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
+            HeimlichAndCoAgentMoveAction moveAction = (HeimlichAndCoAgentMoveAction) action;
+            boolean playerCanReceiveCard = withCards && cards.get(currentPlayer).size() < 4 && !cardStack.isEmpty();
+            if (moveAction.movesAgentsIntoRuins(boardBeforeAction) && playerCanReceiveCard) { //check whether action moves agent into ruins and should therefore be awarded a card
+                cards.get(currentPlayer).add(cardStack.drawCard());
+            }
+            if (moveAction.isNoMoveAction() && playerCanReceiveCard) { //special case where the player chose to draw a card instead of moving agents
+                cards.get(currentPlayer).add(cardStack.drawCard());
+            }
+        }
+        if (action.getClass().equals(HeimlichAndCoCardAction.class)) { //need to remove card if one was played
+            ((HeimlichAndCoCardAction) action).removePlayedCardFromList(cards.get(currentPlayer));
+            if (((HeimlichAndCoCardAction) action).isSkipCardAction()) {
+                playersSkippedInARowDuringCardPhase++;
+                nextPlayer();
+            }
+            playersSkippedInARowDuringCardPhase = 0;
+        }
+    }
+
+    /**
      * If the game is in a state of indeterminacy, this method will return an action according to the
      * distribution of probabilities, or hidden information. If the game is in a definitive state null
      * is returned.
-     * Note: Because heimlich_and_co can never be in a state of indeterminacy, this function will always return null.
+     * Note: Because HeimlichAndCo can never be in a state of indeterminacy, this function will always return null.
      *
      * @return null
      */
@@ -269,15 +274,15 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
      * @return a new copy of the game with the action applied
      */
     @Override
-    public heimlich_and_co doAction(HeimlichAndCoAction heimlichAndCoAction) {
-        heimlich_and_co newGame = new heimlich_and_co(this, false);
+    public HeimlichAndCo doAction(HeimlichAndCoAction heimlichAndCoAction) {
+        HeimlichAndCo newGame = new HeimlichAndCo(this, false);
         newGame.applyAction(heimlichAndCoAction);
         return newGame;
     }
 
     /**
      * Progresses the game if it currently is in an indeterminant state.
-     * Note: heimlich_and_co is never in an indeterminant state therefore this method will always throw an exception.
+     * Note: HeimlichAndCo is never in an indeterminant state therefore this method will always throw an exception.
      *
      * @throws IllegalStateException (always)
      */
@@ -299,7 +304,7 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
     public Game<HeimlichAndCoAction, HeimlichAndCoBoard> getGame(int i) {
         int oldCurrentPlayer = this.currentPlayer;
         this.currentPlayer = i;
-        heimlich_and_co copy = new heimlich_and_co(this, true);
+        HeimlichAndCo copy = new HeimlichAndCo(this, true);
         copy.currentPlayer = oldCurrentPlayer;
         this.currentPlayer = oldCurrentPlayer;
         return copy;
@@ -405,12 +410,12 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
 
     @Override
     public int getMaximumNumberOfPlayers() {
-        return heimlich_and_co.MAXIMUM_NUMBER_OF_PLAYERS;
+        return HeimlichAndCo.MAXIMUM_NUMBER_OF_PLAYERS;
     }
 
     @Override
     public int getMinimumNumberOfPlayers() {
-        return heimlich_and_co.MINIMUM_NUMBER_OF_PLAYERS;
+        return HeimlichAndCo.MINIMUM_NUMBER_OF_PLAYERS;
     }
 
     @Override
@@ -485,7 +490,7 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
     }
 
     /**
-     * Determines whether the game is over. In heimlich_and_co this is the case if a player has a score of 42 or more.
+     * Determines whether the game is over. In HeimlichAndCo this is the case if a player has a score of 42 or more.
      *
      * @return whether the game is over
      */
@@ -540,56 +545,95 @@ public class heimlich_and_co implements Game<HeimlichAndCoAction, HeimlichAndCoB
      */
     private HeimlichAndCoPhase getNextPhase(HeimlichAndCoAction action, boolean scoreTriggered) {
         if (action.getClass().equals(HeimlichAndCoDieRollAction.class)) {
-            if (phase == HeimlichAndCoPhase.DieRollPhase) {
-                return HeimlichAndCoPhase.AgentMovePhase;
-            } else {
-                throw new IllegalStateException("The game is in a state it should not be in.");
-            }
+            return getNextPhaseAfterDieRoll();
         }
 
         if (action.getClass().equals(HeimlichAndCoAgentMoveAction.class)) {
-            if (this.phase != HeimlichAndCoPhase.AgentMovePhase) {
-                throw new IllegalStateException("The game is in a state it should not be in.");
-            }
-            if (this.withCards) {
-                return HeimlichAndCoPhase.CardPlayPhase;
+            return getNextPhaseAfterAgentMove(scoreTriggered);
+        }
+
+        if (action.getClass().equals(HeimlichAndCoCardAction.class)) {
+            return getNextPhaseAfterCardAction((HeimlichAndCoCardAction) action, scoreTriggered);
+        }
+
+        if (action.getClass().equals(HeimlichAndCoSafeMoveAction.class)) {
+            return getNextPhaseAfterSafeMoveAction();
+        }
+        throw new IllegalArgumentException("The action given does not correspond to a valid type.");
+    }
+
+    /**
+     * Determines the next phase after a dieRollAction.
+     *
+     * @return the phase the game should enter
+     */
+    private HeimlichAndCoPhase getNextPhaseAfterDieRoll() {
+        if (phase == HeimlichAndCoPhase.DieRollPhase) {
+            return HeimlichAndCoPhase.AgentMovePhase;
+        } else {
+            throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
+        }
+    }
+
+    /**
+     * Determines the next phase after an agentMoveAction.
+     *
+     * @param scoreTriggered whether scoring was triggered
+     * @return the phase the game should enter
+     */
+    private HeimlichAndCoPhase getNextPhaseAfterAgentMove(boolean scoreTriggered) {
+        if (this.phase != HeimlichAndCoPhase.AgentMovePhase) {
+            throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
+        }
+        if (this.withCards) {
+            return HeimlichAndCoPhase.CardPlayPhase;
+        } else {
+            if (scoreTriggered) {
+                return HeimlichAndCoPhase.SafeMovePhase;
             } else {
+                return HeimlichAndCoPhase.DieRollPhase;
+            }
+        }
+    }
+
+    /**
+     * Determines the next phase after a cardAction.
+     *
+     * @param action action taken
+     * @param scoreTriggered whether scoring was triggered
+     * @return the phase the game should enter
+     */
+    private HeimlichAndCoPhase getNextPhaseAfterCardAction(HeimlichAndCoCardAction action, boolean scoreTriggered) {
+        if (action.isSkipCardAction()) {
+            if (playersSkippedInARowDuringCardPhase == numberOfPLayers) {
                 if (scoreTriggered) {
                     return HeimlichAndCoPhase.SafeMovePhase;
                 } else {
                     return HeimlichAndCoPhase.DieRollPhase;
                 }
-            }
-        }
-
-        if (action.getClass().equals(HeimlichAndCoCardAction.class)) {
-            HeimlichAndCoCardAction cardAction = (HeimlichAndCoCardAction) action;
-            if (cardAction.isSkipCardAction()) {
-                if (playersSkippedInARowDuringCardPhase == numberOfPLayers) {
-                    if (scoreTriggered) {
-                        return HeimlichAndCoPhase.SafeMovePhase;
-                    } else {
-                        return HeimlichAndCoPhase.DieRollPhase;
-                    }
-                } else if (playersSkippedInARowDuringCardPhase > numberOfPLayers) {
-                    throw new IllegalStateException("The game is in a state it should not be in.");
-                } else {
-                    return HeimlichAndCoPhase.CardPlayPhase;
-                }
+            } else if (playersSkippedInARowDuringCardPhase > numberOfPLayers) {
+                throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
             } else {
                 return HeimlichAndCoPhase.CardPlayPhase;
             }
+        } else {
+            return HeimlichAndCoPhase.CardPlayPhase;
         }
-
-        if (action.getClass().equals(HeimlichAndCoSafeMoveAction.class)) {
-            if (phase == HeimlichAndCoPhase.SafeMovePhase) {
-                return HeimlichAndCoPhase.DieRollPhase;
-            } else {
-                throw new IllegalStateException("The game is in a state it should not be in.");
-            }
-        }
-        throw new IllegalArgumentException("The action given does not correspond to a valid type.");
     }
+
+    /**
+     * Determines the next phase after a safeMoveAction.
+     *
+     * @return the phase the game should enter
+     */
+    private HeimlichAndCoPhase getNextPhaseAfterSafeMoveAction() {
+        if (phase == HeimlichAndCoPhase.SafeMovePhase) {
+            return HeimlichAndCoPhase.DieRollPhase;
+        } else {
+            throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
+        }
+    }
+
 
     /**
      * Gives information about the amount of dummy agents that need to be in play according to the rulebook.
