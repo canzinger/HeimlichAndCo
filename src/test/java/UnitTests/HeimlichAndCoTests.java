@@ -1,11 +1,22 @@
 package UnitTests;
 
 import heimlich_and_co.HeimlichAndCo;
+import heimlich_and_co.actions.HeimlichAndCoAction;
+import heimlich_and_co.actions.HeimlichAndCoAgentMoveAction;
+import heimlich_and_co.actions.HeimlichAndCoCardAction;
+import heimlich_and_co.actions.HeimlichAndCoDieRollAction;
+import heimlich_and_co.cards.HeimlichAndCoMoveAgentsCard;
+import heimlich_and_co.enums.Agent;
+import heimlich_and_co.enums.HeimlichAndCoPhase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Set;
 
 class HeimlichAndCoTests {
 
@@ -33,6 +44,8 @@ class HeimlichAndCoTests {
     }
 
     //endregion
+
+    //region getGame
 
     @Test
     void givenValidInstance_getGame_ReturnsDeepCopyOfGame() {
@@ -92,4 +105,156 @@ class HeimlichAndCoTests {
         Assertions.assertEquals(1, copiedGame.getCards().size());
         Assertions.assertTrue(copiedGame.getCards().containsKey(1));
     }
+
+    //endregion
+
+    //region test phase (sequences)
+
+    @Test
+    void givenNothing_CreatingNewGame_StartsInDieRollPhase() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+
+        Assertions.assertEquals(HeimlichAndCoPhase.DIE_ROLL_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenDieRollPhase_NextPhaseIsAgentMovePhase() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        game = game.doAction(game.getPossibleActions().iterator().next());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.AGENT_MOVE_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenGameWithoutCardsAndAgentMovePhase_DoingActionWithoutTriggeringScoring_NextPhaseIsDieRollPhase() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        int firstPlayer = game.getCurrentPlayer();
+        game = game.doAction(game.getPossibleActions().iterator().next()); //-> to agentMovePhase
+
+        game = game.doAction(game.getPossibleActions().iterator().next()); //-> we can safely do any action, as no action can trigger scoring at this point (safe on field 7, player can move at most 6 fields)
+        Assertions.assertFalse(game.getBoard().scoringTriggered());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.DIE_ROLL_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenGameWithoutCardsAndAgentMovePhase_DoingActionTriggeringScoring_NextPhaseIsSafeMovePhase() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        game.setAllowCustomDieRolls(true);
+        game.getBoard().moveSafe(2);
+
+        game = game.doAction(new HeimlichAndCoDieRollAction(2));
+
+        Agent agentToMove = game.getBoard().getAgents()[0];
+        Map<Agent, Integer> moves = new EnumMap<>(Agent.class);
+        moves.put(agentToMove, 2);
+        HeimlichAndCoAction action = new HeimlichAndCoAgentMoveAction(moves);
+        game = game.doAction(action);
+
+        Assertions.assertEquals(HeimlichAndCoPhase.SAFE_MOVE_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenSafeMovePhase_NextPhaseIsDieRollPhase() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        game.setAllowCustomDieRolls(true);
+        game.getBoard().moveSafe(2);
+
+        game = game.doAction(new HeimlichAndCoDieRollAction(2));
+
+        Agent agentToMove = game.getBoard().getAgents()[0];
+        Map<Agent, Integer> moves = new EnumMap<>(Agent.class);
+        moves.put(agentToMove, 2);
+        HeimlichAndCoAction action = new HeimlichAndCoAgentMoveAction(moves);
+        game = game.doAction(action); //-> to safe move phase
+
+        game = game.doAction(game.getPossibleActions().iterator().next()); //to die roll phase
+
+        Assertions.assertEquals(HeimlichAndCoPhase.DIE_ROLL_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenGameWithCardsAndAgentMovePhase_NextPhaseIsCardPhase() {
+        HeimlichAndCo game = new HeimlichAndCo("1", 3);
+        game = game.doAction(game.getPossibleActions().iterator().next());
+        game = game.doAction(game.getPossibleActions().iterator().next());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenGameWithCardsAndScoringNotTriggeredAndCardPhase_AfterAllPlayersSkip_DieRollPhase() {
+        HeimlichAndCo game = new HeimlichAndCo("1", 3);
+        game = game.doAction(game.getPossibleActions().iterator().next());
+        game = game.doAction(game.getPossibleActions().iterator().next());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+
+        //all (3) players must skip before die roll phase
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.DIE_ROLL_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenGameWithCardsAndScoringTriggeredAndCardPhase_AfterAllPlayersSkip_SafeMovePhase() {
+        HeimlichAndCo game = new HeimlichAndCo("1", 3);
+        game.setAllowCustomDieRolls(true);
+        game.getBoard().moveSafe(2);
+
+        game = game.doAction(new HeimlichAndCoDieRollAction(2));
+
+        Agent agentToMove = game.getBoard().getAgents()[0];
+        Map<Agent, Integer> moves = new EnumMap<>(Agent.class);
+        moves.put(agentToMove, 2);
+        HeimlichAndCoAction action = new HeimlichAndCoAgentMoveAction(moves);
+        game = game.doAction(action); //-> to die roll phase
+
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.SAFE_MOVE_PHASE, game.getCurrentPhase());
+    }
+
+    @Test
+    void givenGameWithCardsAndScoringNotTriggered_PlayingCardsExtendsCardPhase() {
+        HeimlichAndCo game = new HeimlichAndCo("1", 3);
+        game = game.doAction(game.getPossibleActions().iterator().next());
+        game = game.doAction(game.getPossibleActions().iterator().next());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+
+        for(HeimlichAndCoAction action: game.getPossibleActions()) {
+            if (action.getClass().equals(HeimlichAndCoCardAction.class)) {
+                if (!((HeimlichAndCoCardAction)action).isSkipCardAction()) {
+                    game = game.doAction(action);
+                    break;
+                }
+            }
+        }
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+        game = game.doAction(HeimlichAndCoCardAction.getSkipCardAction());
+
+        Assertions.assertNotEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
+    }
+
+
 }

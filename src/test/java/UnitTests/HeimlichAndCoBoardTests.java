@@ -36,6 +36,11 @@ class HeimlichAndCoBoardTests {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new HeimlichAndCoBoard(4));
     }
 
+    @Test
+    void given_Noting_UsingConstructor_SafePlacedOnField7() {
+        Assertions.assertEquals(7, (new HeimlichAndCoBoard()).getSafePosition());
+    }
+
     //endregion
 
     //region  Cloning tests
