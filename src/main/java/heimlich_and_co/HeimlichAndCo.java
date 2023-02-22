@@ -313,28 +313,13 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     /**
      * Returns the current score of the player
-     * Exception: when the game is over, only the winning player is awarded utility, the others get 0 (because they lost).
      *
      * @param i player for which utility is wanted
      * @return utility value
      */
     @Override
     public double getUtilityValue(int i) {
-        if (isGameOver()) {
-            int maxScore = 0;
-            for (Agent a : board.getScores().keySet()) {
-                if (board.getScores().get(a) > maxScore) {
-                    maxScore = board.getScores().get(a);
-                }
-            }
-            if (board.getScores().get(playersToAgentsMap.get(i)) == maxScore) {
-                return maxScore;
-            } else {
-                return 0;
-            }
-        } else {
-            return board.getScores().get(playersToAgentsMap.get(i));
-        }
+        return board.getScores().get(playersToAgentsMap.get(i));
     }
 
     /**
@@ -691,5 +676,37 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     public void setPlayersSkippedInARowDuringCardPhase(int playersSkippedInARowDuringCardPhase) {
         this.playersSkippedInARowDuringCardPhase = playersSkippedInARowDuringCardPhase;
+    }
+
+    /**
+     * Disqualifies a player. Can be invoked after a player times out for example. The new game is "as identical
+     * as possible" to this game, but with the player disqualified/removed. The state of the game changes
+     * as little as possible (meaning the state of the game, board, other players are only changed if absolutely
+     * necessary).
+     * For some games this might not be possible/feasible, in this case an UnsupportedOperationException is thrown.
+     *
+     * @param playerId - the player to disqualify
+     * @return a new game with the given player disqualified
+     * @throws IllegalArgumentException if the player is not currently in the game
+     * @throws IllegalStateException if the player cannot be disqualified because not enough players would remain
+     * @throws UnsupportedOperationException if the game does not support disqualification
+     */
+    @Override
+    public HeimlichAndCo disqualifyPlayer(int playerId) {
+        if (numberOfPLayers == 2) {
+            throw new IllegalStateException("There are only 2 players (left), therefore no player can be disqualified");
+        }
+        if (!playersToAgentsMap.containsKey(playerId)) {
+            throw new IllegalArgumentException("Given player does not play in the game");
+        }
+
+
+
+        return null;
+    }
+
+    @Override
+    public boolean supportsDisqualification() {
+        return false;
     }
 }
