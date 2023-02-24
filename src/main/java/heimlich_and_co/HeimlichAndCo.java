@@ -58,6 +58,8 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      */
     private boolean allowCustomDieRolls;
 
+    private final Set<Integer> disqualifiedPlayers = new HashSet<>();
+
     /**
      * Creates a new HeimlichAndCo instance with the minimum amount of players needed and without cards.
      */
@@ -115,6 +117,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
             }
         }
         allowCustomDieRolls = game.allowCustomDieRolls;
+        this.disqualifiedPlayers.addAll(game.disqualifiedPlayers);
     }
 
     /**
@@ -222,6 +225,13 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (phase == HeimlichAndCoPhase.SAFE_MOVE_PHASE) {
             currentPlayer = currentTurnPlayer;
             board.awardPoints();
+
+            //skip the safe move phase for the disqualified player
+            if (disqualifiedPlayers.contains(currentTurnPlayer)) {
+                board.moveSafe(7);
+                phase = HeimlichAndCoPhase.DIE_ROLL_PHASE;
+                turnFinished();
+            }
         } else if (phase == HeimlichAndCoPhase.DIE_ROLL_PHASE) {
             turnFinished();
         }
@@ -591,13 +601,13 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      */
     private HeimlichAndCoPhase getNextPhaseAfterCardAction(HeimlichAndCoCardAction action, boolean scoreTriggered) {
         if (action.isSkipCardAction()) {
-            if (playersSkippedInARowDuringCardPhase == numberOfPLayers) {
+            if (playersSkippedInARowDuringCardPhase == numberOfPLayers - disqualifiedPlayers.size()) {
                 if (scoreTriggered) {
                     return HeimlichAndCoPhase.SAFE_MOVE_PHASE;
                 } else {
                     return HeimlichAndCoPhase.DIE_ROLL_PHASE;
                 }
-            } else if (playersSkippedInARowDuringCardPhase > numberOfPLayers) {
+            } else if (playersSkippedInARowDuringCardPhase > numberOfPLayers - disqualifiedPlayers.size()) {
                 throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
             } else {
                 return HeimlichAndCoPhase.CARD_PLAY_PHASE;
@@ -642,6 +652,9 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      */
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % this.numberOfPLayers;
+        if (disqualifiedPlayers.contains(currentPlayer)) {
+            nextPlayer();
+        }
     }
 
     /**
@@ -685,28 +698,53 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * necessary).
      * For some games this might not be possible/feasible, in this case an UnsupportedOperationException is thrown.
      *
-     * @param playerId - the player to disqualify
      * @return a new game with the given player disqualified
      * @throws IllegalArgumentException if the player is not currently in the game
      * @throws IllegalStateException if the player cannot be disqualified because not enough players would remain
      * @throws UnsupportedOperationException if the game does not support disqualification
      */
     @Override
-    public HeimlichAndCo disqualifyPlayer(int playerId) {
+    public HeimlichAndCo disqualifyCurrentPlayer() {
         if (numberOfPLayers == 2) {
             throw new IllegalStateException("There are only 2 players (left), therefore no player can be disqualified");
         }
-        if (!playersToAgentsMap.containsKey(playerId)) {
+        if (!playersToAgentsMap.containsKey(this.currentPlayer)) {
             throw new IllegalArgumentException("Given player does not play in the game");
         }
 
+        HeimlichAndCo newGame = new HeimlichAndCo(this);
+        newGame.disqualifiedPlayers.add(newGame.currentPlayer);
+        newGame.playersToAgentsMap.remove(newGame.currentPlayer);
 
+        if (newGame.withCards) {
+            newGame.cards.remove(newGame.currentPlayer);
+        }
 
-        return null;
+        switch (newGame.phase){
+            //in case of die roll phase or agent move phase we can just make the next player roll the die
+            case DIE_ROLL_PHASE:
+            case AGENT_MOVE_PHASE:
+                newGame.turnFinished();
+                newGame.phase = HeimlichAndCoPhase.DIE_ROLL_PHASE;
+                break;
+            case CARD_PLAY_PHASE:
+                newGame.nextPlayer();
+                break;
+            case SAFE_MOVE_PHASE:
+                newGame.board.moveSafe(7);
+                newGame.phase = HeimlichAndCoPhase.DIE_ROLL_PHASE;
+                newGame.turnFinished();
+                break;
+        }
+        return newGame;
     }
 
     @Override
     public boolean supportsDisqualification() {
-        return false;
+        return true;
+    }
+
+    public Set<Integer> getDisqualifiedPlayers() {
+        return disqualifiedPlayers;
     }
 }
