@@ -329,7 +329,11 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      */
     @Override
     public double getUtilityValue(int i) {
-        return board.getScores().get(playersToAgentsMap.get(i));
+        if (disqualifiedPlayers.contains(i)) {
+            return -1;
+        } else {
+            return board.getScores().get(playersToAgentsMap.get(i));
+        }
     }
 
     /**
@@ -705,7 +709,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      */
     @Override
     public HeimlichAndCo disqualifyCurrentPlayer() {
-        if (numberOfPLayers == 2) {
+        if (numberOfPLayers - this.disqualifiedPlayers.size() <= 2) {
             throw new IllegalStateException("There are only 2 players (left), therefore no player can be disqualified");
         }
         if (!playersToAgentsMap.containsKey(this.currentPlayer)) {

@@ -38,15 +38,15 @@ w
 Gsrc/main/java/heimlich_and_co/actions/HeimlichAndCoAgentMoveAction.java,1/d/1d5d3575aa3b36b08f90ad34d5f3e0c6190e0fa4
 9
 	README.md,8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
-u
-Esrc/main/java/heimlich_and_co/actions/HeimlichAndCoDieRollAction.java,5/f/5f6d79d30801ab203ef40e1adc7de44c38680e09
 7
 LICENSE,0/3/0398ccd0f49298b10a3d76a47800d2ebecd49859
-d
-4src/test/java/UnitTests/HeimlichAndCoBoardTests.java,a/3/a3eaa428511d2818c7506bb6aaa0a270a943ddca
 b
 2src/test/java/UnitTests/CardStackFactoryTests.java,4/7/4720793b5b0c495555ea7bb3e9ee18a7f850fa21
 =
 decisions.txt,c/e/ce69ae9d03929c73ecf35a371d2104796c9ceb97
 F
 Documentation/Cards.md,c/5/c573a698812c969777e782d8a6c3d0d685d51bef
+R
+"Documentation/game_instructions.md,3/1/31186edb3ffa2029eff8b83c58989b2acc97fdc8
+?
+settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233

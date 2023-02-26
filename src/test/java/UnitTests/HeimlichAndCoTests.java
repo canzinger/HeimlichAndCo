@@ -5,7 +5,6 @@ import heimlich_and_co.actions.HeimlichAndCoAction;
 import heimlich_and_co.actions.HeimlichAndCoAgentMoveAction;
 import heimlich_and_co.actions.HeimlichAndCoCardAction;
 import heimlich_and_co.actions.HeimlichAndCoDieRollAction;
-import heimlich_and_co.cards.HeimlichAndCoMoveAgentsCard;
 import heimlich_and_co.enums.Agent;
 import heimlich_and_co.enums.HeimlichAndCoPhase;
 import org.junit.jupiter.api.Assertions;
@@ -15,8 +14,8 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 class HeimlichAndCoTests {
 
@@ -128,7 +127,6 @@ class HeimlichAndCoTests {
     @Test
     void givenGameWithoutCardsAndAgentMovePhase_DoingActionWithoutTriggeringScoring_NextPhaseIsDieRollPhase() {
         HeimlichAndCo game = new HeimlichAndCo(3);
-        int firstPlayer = game.getCurrentPlayer();
         game = game.doAction(game.getPossibleActions().iterator().next()); //-> to agentMovePhase
 
         game = game.doAction(game.getPossibleActions().iterator().next()); //-> we can safely do any action, as no action can trigger scoring at this point (safe on field 7, player can move at most 6 fields)
@@ -255,6 +253,133 @@ class HeimlichAndCoTests {
 
         Assertions.assertNotEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, game.getCurrentPhase());
     }
+
+    //endregion
+
+    // region DisqualificationTests
+
+    @Test
+    void givenValidInstance_disqualifyingPlayerInDieRollPhase_ReturnsNewGameWithNextPlayerInDieRollPhase() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        int currentPlayerToDisqualify = game.getCurrentPlayer();
+        HeimlichAndCo newGame = game.disqualifyCurrentPlayer();
+
+        Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(currentPlayerToDisqualify));
+        Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.DIE_ROLL_PHASE, newGame.getCurrentPhase());
+        Assertions.assertEquals(1, newGame.getCurrentPlayer());
+
+    }
+
+    @Test
+    void givenValidInstance_disqualifyingPlayerInAgentMovePhase_ReturnsNewGameWithNextPlayerInDieRollPhase() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        game = game.doAction(game.getPossibleActions().iterator().next());
+        int currentPlayerToDisqualify = game.getCurrentPlayer();
+        HeimlichAndCo newGame = game.disqualifyCurrentPlayer();
+
+        Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(currentPlayerToDisqualify));
+        Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.DIE_ROLL_PHASE, newGame.getCurrentPhase());
+        Assertions.assertEquals(1, newGame.getCurrentPlayer());
+    }
+
+    @Test
+    void givenValidInstance_disqualifyPlayerInCardPlayPhase_ReturnsNewGameWithNextPlayerInCardPlayPhase() {
+        HeimlichAndCo game = new HeimlichAndCo("1", 3);
+        game = game.doAction(game.getPossibleActions().iterator().next());
+        game = game.doAction(game.getPossibleActions().iterator().next());
+        int currentPlayerToDisqualify = game.getCurrentPlayer();
+        HeimlichAndCo newGame = game.disqualifyCurrentPlayer();
+
+        Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(currentPlayerToDisqualify));
+        Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
+
+        Assertions.assertEquals(HeimlichAndCoPhase.CARD_PLAY_PHASE, newGame.getCurrentPhase());
+        Assertions.assertEquals(1, newGame.getCurrentPlayer());
+    }
+
+    @Test
+    void givenValidInstance_disqualifyPlayerInSafeMovePhase_ReturnsNewGameWithNextPlayerInDieRollPhaseWithSafeOnField7() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        int currentPlayerToDisqualify = game.getCurrentPlayer();
+        game.setAllowCustomDieRolls(true);
+        game = game.doAction(new HeimlichAndCoDieRollAction(13));
+
+        game.getBoard().moveSafe(1);
+        Agent agentForScoring = game.getBoard().getAgents()[0];
+        Map<Agent, Integer> movesForAction = new HashMap<>();
+        movesForAction.put(agentForScoring, 1);
+        game = game.doAction(new HeimlichAndCoAgentMoveAction(movesForAction));
+
+        Assertions.assertEquals(HeimlichAndCoPhase.SAFE_MOVE_PHASE, game.getCurrentPhase());
+
+        HeimlichAndCo newGame = game.disqualifyCurrentPlayer();
+
+        Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(currentPlayerToDisqualify));
+        Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
+        Assertions.assertEquals(HeimlichAndCoPhase.DIE_ROLL_PHASE, newGame.getCurrentPhase());
+        Assertions.assertEquals(1, newGame.getCurrentPlayer());
+        Assertions.assertEquals(7, newGame.getBoard().getSafePosition());
+        Assertions.assertEquals(1, newGame.getBoard().getScores().get(agentForScoring));
+    }
+
+    @Test
+    void givenValidInstanceWithoutCards_disqualifyPlayer_ReturnsGameWithPlayerDisqualified() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        HeimlichAndCo newGame = game.disqualifyCurrentPlayer();
+
+        Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
+        Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(0));
+        Assertions.assertFalse(newGame.getPlayersToAgentsMap().containsKey(0));
+    }
+
+    @Test
+    void givenValidInstanceWithCards_disqualifyPlayer_ReturnsGameWithPlayerDisqualified() {
+        HeimlichAndCo game = new HeimlichAndCo("1",3);
+        HeimlichAndCo newGame = game.disqualifyCurrentPlayer();
+
+        Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
+        Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(0));
+        Assertions.assertFalse(newGame.getPlayersToAgentsMap().containsKey(0));
+        Assertions.assertFalse(newGame.getCards().containsKey(0));
+    }
+
+    //This is generally not a good test case, but the only way to check
+    @Test
+    void givenValidInstanceWithoutCards_disqualifyPlayer_DisqualifiedPlayerNeverBecomesCurrentPlayerAgain() {
+        HeimlichAndCo game = new HeimlichAndCo(3);
+        game = game.disqualifyCurrentPlayer();
+        Assertions.assertTrue(game.getDisqualifiedPlayers().contains(0));
+        while(!game.isGameOver()) {
+            game = game.doAction(game.getPossibleActions().iterator().next());
+            Assertions.assertNotEquals(0, game.getCurrentPlayer());
+        }
+    }
+
+    //This is generally not a good test case, but the only way to check
+    @Test
+    void givenValidInstanceWithCards_disqualifyPlayer_DisqualifiedPlayerNeverBecomesCurrentPlayerAgain() {
+        HeimlichAndCo game = new HeimlichAndCo("1",3);
+        game = game.disqualifyCurrentPlayer();
+        Assertions.assertTrue(game.getDisqualifiedPlayers().contains(0));
+        while(!game.isGameOver()) {
+            game = game.doAction(game.getPossibleActions().iterator().next());
+            Assertions.assertNotEquals(0, game.getCurrentPlayer());
+        }
+    }
+
+    @Test
+    void givenValidInstanceWith2Players_disqualifyPlayer_ThrowsIllegalStateException() {
+        HeimlichAndCo game = new HeimlichAndCo(2);
+        Assertions.assertThrows(IllegalStateException.class, game::disqualifyCurrentPlayer);
+    }
+
+
+
+    //endregion
 
 
 }
