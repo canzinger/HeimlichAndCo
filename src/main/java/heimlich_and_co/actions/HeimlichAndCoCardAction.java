@@ -1,8 +1,8 @@
 package heimlich_and_co.actions;
 
-import heimlich_and_co.enums.Agent;
-import heimlich_and_co.cards.HeimlichAndCoCard;
 import heimlich_and_co.HeimlichAndCoBoard;
+import heimlich_and_co.cards.HeimlichAndCoCard;
+import heimlich_and_co.enums.Agent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +27,7 @@ public class HeimlichAndCoCardAction implements HeimlichAndCoAction {
      * Creates a new HeimlichAndCoCardAction which is the action of playing the card with the given agents (if needed) and the number (if needed).
      * Whether agents or a number is needed depends on the card being player
      *
-     * @param card the card to be played
+     * @param card   the card to be played
      * @param agents the agents needed for playing the card
      * @param number the number needed for playing the card
      */

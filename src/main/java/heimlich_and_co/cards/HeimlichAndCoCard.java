@@ -1,8 +1,8 @@
 package heimlich_and_co.cards;
 
+import heimlich_and_co.HeimlichAndCoBoard;
 import heimlich_and_co.actions.HeimlichAndCoCardAction;
 import heimlich_and_co.enums.Agent;
-import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -34,6 +34,8 @@ public abstract class HeimlichAndCoCard {
      */
     public abstract HeimlichAndCoCard deepCopy();
 
+    public abstract boolean equals(Object obj);
+
     /**
      * Calculates all possible actions for a board and this card.
      *
@@ -43,8 +45,6 @@ public abstract class HeimlichAndCoCard {
     public abstract Set<HeimlichAndCoCardAction> getPossibleActions(HeimlichAndCoBoard board);
 
     public abstract int hashCode();
-
-    public abstract boolean equals(Object obj);
 
     public abstract String toString();
 

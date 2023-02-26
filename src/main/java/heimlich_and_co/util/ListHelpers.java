@@ -1,14 +1,15 @@
 package heimlich_and_co.util;
 
-import heimlich_and_co.actions.HeimlichAndCoAction;
 import at.ac.tuwien.ifs.sge.game.ActionRecord;
+import heimlich_and_co.actions.HeimlichAndCoAction;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class ListHelpers {
 
-    private ListHelpers() {}
+    private ListHelpers() {
+    }
 
     /**
      * Creates a deep copy of a List of ActionRecord<HeimlichAndCoAction> by using clone on the respective actions.

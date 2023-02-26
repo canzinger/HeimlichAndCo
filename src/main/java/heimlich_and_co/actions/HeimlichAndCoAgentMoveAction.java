@@ -1,7 +1,7 @@
 package heimlich_and_co.actions;
 
-import heimlich_and_co.enums.Agent;
 import heimlich_and_co.HeimlichAndCoBoard;
+import heimlich_and_co.enums.Agent;
 
 import java.util.*;
 
@@ -21,7 +21,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     public HeimlichAndCoAgentMoveAction(Map<Agent, Integer> agentsMoves) {
         if (agentsMoves != null && !agentsMoves.isEmpty()) {
             this.agentsMoves = new EnumMap<>(Agent.class);
-            for(Map.Entry<Agent, Integer> entry: agentsMoves.entrySet()) {
+            for (Map.Entry<Agent, Integer> entry : agentsMoves.entrySet()) {
                 if (entry.getValue().compareTo(0) > 0) {
                     this.agentsMoves.put(entry.getKey(), entry.getValue());
                 }
@@ -156,7 +156,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
     @Override
     public int hashCode() {
         int hashCode = 0;
-        for (Map.Entry<Agent, Integer> entry: agentsMoves.entrySet()) {
+        for (Map.Entry<Agent, Integer> entry : agentsMoves.entrySet()) {
             hashCode += (entry.getKey().ordinal() + 37) * entry.getValue();
         }
         return hashCode;
@@ -170,7 +170,7 @@ public class HeimlichAndCoAgentMoveAction implements HeimlichAndCoAction {
      */
     public boolean movesAgentsIntoRuins(HeimlichAndCoBoard board) {
         Map<Agent, Integer> positions = board.getAgentsPositions();
-        for (Map.Entry<Agent, Integer> entry: this.agentsMoves.entrySet()) {
+        for (Map.Entry<Agent, Integer> entry : this.agentsMoves.entrySet()) {
             if ((positions.get(entry.getKey()) + entry.getValue()) % board.getNumberOfFields() == HeimlichAndCoBoard.getRuinsField()) {
                 return true;
             }

@@ -1,8 +1,8 @@
 package heimlich_and_co.cards;
 
+import heimlich_and_co.HeimlichAndCoBoard;
 import heimlich_and_co.actions.HeimlichAndCoCardAction;
 import heimlich_and_co.enums.Agent;
-import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.*;
 
@@ -34,6 +34,26 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
      */
     public HeimlichAndCoMoveAgentsCard(HeimlichAndCoMoveAgentsCard card) {
         this(card.cardSpecification);
+    }
+
+    @Override
+    public HeimlichAndCoMoveAgentsCard deepCopy() {
+        return new HeimlichAndCoMoveAgentsCard(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (HeimlichAndCoMoveAgentsCard.class == obj.getClass()) {
+            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -77,28 +97,8 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
     }
 
     @Override
-    public HeimlichAndCoMoveAgentsCard deepCopy() {
-        return new HeimlichAndCoMoveAgentsCard(this);
-    }
-
-    @Override
     public int hashCode() {
         return cardSpecification.hashCode() * 47;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        if (HeimlichAndCoMoveAgentsCard.class == obj.getClass()) {
-            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
-        } else {
-            return false;
-        }
     }
 
     public String toString() {
@@ -130,6 +130,12 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
             default:
                 throw new IllegalStateException(ILLEGAL_TYPE_MESSAGE);
         }
+    }
+
+    private Set<HeimlichAndCoCardAction> getPossibleActionsType6() {
+        Set<HeimlichAndCoCardAction> actions = new HashSet<>();
+        actions.add(new HeimlichAndCoCardAction(this, null, 0));
+        return actions;
     }
 
     /**
@@ -362,13 +368,6 @@ public class HeimlichAndCoMoveAgentsCard extends HeimlichAndCoCard {
         }
         return actions;
     }
-
-    private Set<HeimlichAndCoCardAction> getPossibleActionsType6() {
-        Set<HeimlichAndCoCardAction> actions = new HashSet<>();
-        actions.add(new HeimlichAndCoCardAction(this, null, 0));
-        return actions;
-    }
-
 
     private Set<HeimlichAndCoCardAction> getPossibleActionsType7(HeimlichAndCoBoard board) {
         Set<HeimlichAndCoCardAction> actions = new HashSet<>();

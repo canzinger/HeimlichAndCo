@@ -119,6 +119,10 @@ public class HeimlichAndCoBoard {
 
     //endregion
 
+    public static int getRuinsField() {
+        return RUINS_FIELD;
+    }
+
     /**
      * Calculates for each field which agents are on it.
      *
@@ -210,7 +214,7 @@ public class HeimlichAndCoBoard {
      * @param agentsMoves Map denoting the amount of fields certain agents should be moved
      */
     public void moveAgents(Map<Agent, Integer> agentsMoves) {
-        for(Map.Entry<Agent, Integer> entry: agentsMoves.entrySet()) {
+        for (Map.Entry<Agent, Integer> entry : agentsMoves.entrySet()) {
             moveAgent(entry.getKey(), entry.getValue());
         }
     }
@@ -243,7 +247,7 @@ public class HeimlichAndCoBoard {
      * @return whether scoring was triggered
      */
     public boolean scoringTriggered() {
-        for (Map.Entry<Agent, Boolean> entry: scoringTriggeredForAgent.entrySet()) {
+        for (Map.Entry<Agent, Boolean> entry : scoringTriggeredForAgent.entrySet()) {
             if (Boolean.TRUE.equals(entry.getValue())) {
                 return true;
             }
@@ -469,10 +473,6 @@ public class HeimlichAndCoBoard {
         return NUMBER_OF_FIELDS;
     }
 
-    public static int getRuinsField() {
-        return RUINS_FIELD;
-    }
-
     public int getSafePosition() {
         return safePosition;
     }
@@ -484,6 +484,17 @@ public class HeimlichAndCoBoard {
      */
     public Map<Agent, Integer> getScores() {
         return scores;
+    }
+
+    /**
+     * Returns a map which indicates if scoring was triggered in the current round for a player. This can be
+     * interpreted that if after moving an agent or after the top-secret round there is a true value for ANY agent,
+     * then scoring is triggered.
+     *
+     * @return Map with an entry for each agent.
+     */
+    public Map<Agent, Boolean> getScoringTriggeredForAgent() {
+        return scoringTriggeredForAgent;
     }
 
     /**
@@ -528,17 +539,6 @@ public class HeimlichAndCoBoard {
         Agent[] participatingAgents = new Agent[number];
         System.arraycopy(totalAgents, 0, participatingAgents, 0, number);
         return participatingAgents;
-    }
-
-    /**
-     * Returns a map which indicates if scoring was triggered in the current round for a player. This can be
-     * interpreted that if after moving an agent or after the top-secret round there is a true value for ANY agent,
-     * then scoring is triggered.
-     *
-     * @return Map with an entry for each agent.
-     */
-    public Map<Agent, Boolean> getScoringTriggeredForAgent() {
-        return scoringTriggeredForAgent;
     }
 }
 

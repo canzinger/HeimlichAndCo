@@ -3,8 +3,6 @@ a
 1src/main/java/heimlich_and_co/Util/CardStack.java,8/e/8e3e29b1659683c45475a82bb9655483380686c9
 c
 3src/main/java/heimlich_and_co/util/ListHelpers.java,1/5/15300fc22fb1ac8f48c9b76d99fcd64b0216061a
-t
-Dsrc/main/java/heimlich_and_co/cards/HeimlichAndCoMoveAgentsCard.java,b/0/b04c37809cc1d9468e0bcbbf80c87e0e937ef81e
 w
 Gsrc/main/java/heimlich_and_co/cards/HeimlichAndCoCardSpecification.java,5/a/5ab671cc2fea20510bb2c2807de5fa320354984d
 n
@@ -26,16 +24,10 @@ G
 .src/main/java/heimlich_and_co/enums/Agent.java,9/4/948bdf0d61580951fb87be87dd11777df814ac38
 k
 ;src/main/java/heimlich_and_co/enums/HeimlichAndCoPhase.java,3/e/3eb08bf39561aca4b55063d364c4018bfead8a90
-z
-Jsrc/main/java/heimlich_and_co/factories/HeimlichAndCoCardStackFactory.java,c/4/c427468452557fbc4dcf42d0b1c3f61114c08377
 a
 1src/main/java/heimlich_and_co/util/CardStack.java,f/1/f1531d450c8d04efece5979bb26efa36a300bb2d
 [
 +src/main/java/heimlich_and_co/util/Die.java,f/f/ffecf2fb01de02c4b12cd6e27c2326be8d18fe5c
-r
-Bsrc/main/java/heimlich_and_co/cards/HeimlichAndCoMoveSafeCard.java,9/3/931a05126dd23092b6eb0de07a873b5902bde902
-w
-Gsrc/main/java/heimlich_and_co/actions/HeimlichAndCoAgentMoveAction.java,1/d/1d5d3575aa3b36b08f90ad34d5f3e0c6190e0fa4
 9
 	README.md,8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
 7

@@ -1,8 +1,8 @@
 package heimlich_and_co.cards;
 
+import heimlich_and_co.HeimlichAndCoBoard;
 import heimlich_and_co.actions.HeimlichAndCoCardAction;
 import heimlich_and_co.enums.Agent;
-import heimlich_and_co.HeimlichAndCoBoard;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +39,21 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
         return new HeimlichAndCoMoveSafeCard(this);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (HeimlichAndCoMoveSafeCard.class == obj.getClass()) {
+            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Calculates all possible actions for a board and this card.
      *
@@ -61,21 +76,6 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
     @Override
     public int hashCode() {
         return cardSpecification.hashCode() * 53;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        if (HeimlichAndCoMoveSafeCard.class == obj.getClass()) {
-            return cardSpecification.equals(((HeimlichAndCoCard) obj).cardSpecification);
-        } else {
-            return false;
-        }
     }
 
     public String toString() {

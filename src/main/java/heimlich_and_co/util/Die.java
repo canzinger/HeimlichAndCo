@@ -4,7 +4,7 @@ import java.util.Random;
 
 /**
  * A class that provides methods to roll a die, specifically for Heimlich and Co
- *
+ * <p>
  * the top face 1-3 is encoded as 13
  */
 public class Die {
