@@ -12,7 +12,7 @@ public class ListHelpers {
     }
 
     /**
-     * Creates a deep copy of a List of ActionRecord<HeimlichAndCoAction> by using clone on the respective actions.
+     * Creates a deep copy of a List of ActionRecord by copying the respective actions.
      *
      * @param list list to be copied
      * @return LinkedList deep copy of the list

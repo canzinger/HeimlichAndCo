@@ -121,7 +121,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     /**
      * NOTE: This is a deviation from the "original" description of the engine. The engine uses this method to allow
-     * for custom boards. As this is not possible or rather does not make sense for Heimlich&Co, a custom board does not
+     * for custom boards. As this is not possible or rather does not make sense for Heimlich and Co, a custom board does not
      * make sense.
      * <p>
      * The -b option is therefore used to set whether to play with or without cards. If board equals "1",
@@ -151,31 +151,31 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * Acts as the base constructor which all other constructors call.
      *
      * @param currentPlayer      current player
-     * @param numberOfPLayers    the number of players that are playing (must confine to the restrictions by minimum and
+     * @param numberOfPlayers    the number of players that are playing (must confine to the restrictions by minimum and
      *                           maximum players needed for playing)
      * @param actionRecords      the action records (can be null)
      * @param board              the board (can be null)
      * @param playersToAgentsMap Map which maps players to agents (can be null)
      * @param withCards          whether the game should be with or without cards
      */
-    public HeimlichAndCo(int currentPlayer, int numberOfPLayers,
+    public HeimlichAndCo(int currentPlayer, int numberOfPlayers,
                          List<ActionRecord<HeimlichAndCoAction>> actionRecords,
                          HeimlichAndCoBoard board, Map<Integer, Agent> playersToAgentsMap, boolean withCards) {
-        if (currentPlayer < 0 || currentPlayer >= numberOfPLayers) {
+        if (currentPlayer < 0 || currentPlayer >= numberOfPlayers) {
             throw new IllegalArgumentException("Current player must be a valid player." + currentPlayer);
         }
         this.currentPlayer = currentPlayer;
-        if (numberOfPLayers < getMinimumNumberOfPlayers() || numberOfPLayers > getMaximumNumberOfPlayers()) {
+        if (numberOfPlayers < getMinimumNumberOfPlayers() || numberOfPlayers > getMaximumNumberOfPlayers()) {
             throw new IllegalArgumentException("Invalid value given for number of players.");
         }
-        this.numberOfPLayers = numberOfPLayers;
+        this.numberOfPLayers = numberOfPlayers;
         if (actionRecords == null) {
             this.actionRecords = new LinkedList<>();
         } else {
             this.actionRecords = ListHelpers.deepCopyActionRecordList(actionRecords);
         }
         if (board == null) {
-            this.board = new HeimlichAndCoBoard(numberOfPLayers + getNumberOfDummyAgents(numberOfPLayers));
+            this.board = new HeimlichAndCoBoard(numberOfPlayers + getNumberOfDummyAgents(numberOfPlayers));
         } else {
             this.board = new HeimlichAndCoBoard(board);
         }
@@ -271,12 +271,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
 
         HeimlichAndCo newGame = new HeimlichAndCo(this);
-        newGame.disqualifiedPlayers.add(newGame.currentPlayer);
-        newGame.playersToAgentsMap.remove(newGame.currentPlayer);
-
-        if (newGame.withCards) {
-            newGame.cards.remove(newGame.currentPlayer);
-        }
 
         switch (newGame.phase) {
             //in case of die roll phase or agent move phase we can just make the next player roll the die
@@ -350,13 +344,51 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     public double getUtilityValue(int i) {
         if (disqualifiedPlayers.contains(i)) {
             return -1;
-        } else {
+        }
+        if (!this.isGameOver()) {
             return board.getScores().get(playersToAgentsMap.get(i));
         }
+        Map<Agent, Integer> agentsToPlayersMap = new EnumMap<>(Agent.class);
+        for(Map.Entry<Integer, Agent> entry : playersToAgentsMap.entrySet()) {
+            agentsToPlayersMap.put(entry.getValue(), entry.getKey());
+        }
+
+        int maxScore = Integer.MIN_VALUE;
+        for(Agent a : this.board.getAgents()) {
+            if (this.board.getScores().get(a) > maxScore) {
+                maxScore = this.board.getScores().get(a);
+            }
+        }
+
+        List<Agent> winningAgents = new LinkedList<>();
+        for(Agent a : this.board.getAgents()) {
+            if (this.board.getScores().get(a) == maxScore) {
+                winningAgents.add(a);
+            }
+        }
+
+        boolean realNotDisqualifiedPlayerWon = false;
+        for(Agent a: winningAgents) {
+            if (agentsToPlayersMap.containsKey(a)) {
+                int player = agentsToPlayersMap.get(a);
+                if (!this.disqualifiedPlayers.contains(player)) {
+                    realNotDisqualifiedPlayerWon = true;
+                    break;
+                }
+            }
+        }
+
+        if (realNotDisqualifiedPlayerWon) {
+            return board.getScores().get(playersToAgentsMap.get(i));
+        } else {
+            return 0;
+        }
+
+
     }
 
     /**
-     * Returns whether the given action is a valid action in the curretn state of the game.
+     * Returns whether the given action is a valid action in the current state of the game.
      *
      * @param action - the action
      * @return whether the action is valid

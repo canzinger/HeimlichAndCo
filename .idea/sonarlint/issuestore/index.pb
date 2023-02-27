@@ -1,8 +1,6 @@
 
 a
 1src/main/java/heimlich_and_co/Util/CardStack.java,8/e/8e3e29b1659683c45475a82bb9655483380686c9
-c
-3src/main/java/heimlich_and_co/util/ListHelpers.java,1/5/15300fc22fb1ac8f48c9b76d99fcd64b0216061a
 w
 Gsrc/main/java/heimlich_and_co/cards/HeimlichAndCoCardSpecification.java,5/a/5ab671cc2fea20510bb2c2807de5fa320354984d
 n
@@ -42,3 +40,7 @@ R
 "Documentation/game_instructions.md,3/1/31186edb3ffa2029eff8b83c58989b2acc97fdc8
 ?
 settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233
+u
+Esrc/main/java/heimlich_and_co/actions/HeimlichAndCoDieRollAction.java,5/f/5f6d79d30801ab203ef40e1adc7de44c38680e09
+d
+4src/test/java/UnitTests/HeimlichAndCoBoardTests.java,a/3/a3eaa428511d2818c7506bb6aaa0a270a943ddca
