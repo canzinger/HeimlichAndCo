@@ -271,6 +271,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         }
 
         HeimlichAndCo newGame = new HeimlichAndCo(this);
+        newGame.disqualifiedPlayers.add(newGame.currentPlayer);
 
         switch (newGame.phase) {
             //in case of die roll phase or agent move phase we can just make the next player roll the die

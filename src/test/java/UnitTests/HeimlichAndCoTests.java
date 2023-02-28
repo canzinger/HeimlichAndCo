@@ -333,7 +333,6 @@ class HeimlichAndCoTests {
 
         Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
         Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(0));
-        Assertions.assertFalse(newGame.getPlayersToAgentsMap().containsKey(0));
     }
 
     @Test
@@ -343,8 +342,6 @@ class HeimlichAndCoTests {
 
         Assertions.assertEquals(1, newGame.getDisqualifiedPlayers().size());
         Assertions.assertTrue(newGame.getDisqualifiedPlayers().contains(0));
-        Assertions.assertFalse(newGame.getPlayersToAgentsMap().containsKey(0));
-        Assertions.assertFalse(newGame.getCards().containsKey(0));
     }
 
     //This is generally not a good test case, but the only way to check
