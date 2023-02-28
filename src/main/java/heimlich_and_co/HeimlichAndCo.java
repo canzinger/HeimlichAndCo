@@ -335,13 +335,17 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     }
 
     /**
-     * Returns the current score of the player
+     * Returns the utility (usually the current score) of the player
      *
      * @param i player for which utility is wanted
      * @return utility value
+     * @throws IllegalArgumentException if there is no entry for the player in the playersToAgentsMap
      */
     @Override
     public double getUtilityValue(int i) {
+        if (!playersToAgentsMap.containsKey(i)) {
+            throw new IllegalArgumentException("There is not entry for the given player. This might be because there is no player with the given id or because the entry for the given player was removed because it is secret information.");
+        }
         if (disqualifiedPlayers.contains(i)) {
             return -1;
         }

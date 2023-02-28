@@ -20,8 +20,6 @@ G
 Documentation/board.txt,8/3/833f6ceebcc9cb812c595fd9fb7c96c33a77c8f3
 ^
 .src/main/java/heimlich_and_co/enums/Agent.java,9/4/948bdf0d61580951fb87be87dd11777df814ac38
-k
-;src/main/java/heimlich_and_co/enums/HeimlichAndCoPhase.java,3/e/3eb08bf39561aca4b55063d364c4018bfead8a90
 a
 1src/main/java/heimlich_and_co/util/CardStack.java,f/1/f1531d450c8d04efece5979bb26efa36a300bb2d
 [
@@ -44,3 +42,13 @@ u
 Esrc/main/java/heimlich_and_co/actions/HeimlichAndCoDieRollAction.java,5/f/5f6d79d30801ab203ef40e1adc7de44c38680e09
 d
 4src/test/java/UnitTests/HeimlichAndCoBoardTests.java,a/3/a3eaa428511d2818c7506bb6aaa0a270a943ddca
+w
+Gsrc/main/java/heimlich_and_co/actions/HeimlichAndCoAgentMoveAction.java,1/d/1d5d3575aa3b36b08f90ad34d5f3e0c6190e0fa4
+r
+Bsrc/main/java/heimlich_and_co/actions/HeimlichAndCoCardAction.java,7/e/7e5b0281483c22fde5960bf3c22c45c251ada804
+x
+Hsrc/main/java/heimlich_and_co/cards/HeimlichAndCoAddScorePointsCard.java,b/8/b83d9963c88d2305902c85024ecb96de028fed47
+j
+:src/main/java/heimlich_and_co/cards/HeimlichAndCoCard.java,7/b/7bddeb9f6c6cfa3d1af90335d77bf42ea4c3ea45
+t
+Dsrc/main/java/heimlich_and_co/cards/HeimlichAndCoMoveAgentsCard.java,b/0/b04c37809cc1d9468e0bcbbf80c87e0e937ef81e
