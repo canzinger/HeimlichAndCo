@@ -9,8 +9,6 @@ v
 Fsrc/main/java/heimlich_and_co/actions/HeimlichAndCoSafeMoveAction.java,6/d/6dda6a0114e35d9a5468c187b0baab40f8835d2c
 X
 (gradle/wrapper/gradle-wrapper.properties,f/b/fbe448ebfc3eb2d4e308f6b8b043666f5b57235e
-7
-gradlew,5/b/5bbfa66edb4db3c7c33c5181f43510990d3307f9
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
@@ -30,8 +28,6 @@ a
 LICENSE,0/3/0398ccd0f49298b10a3d76a47800d2ebecd49859
 b
 2src/test/java/UnitTests/CardStackFactoryTests.java,4/7/4720793b5b0c495555ea7bb3e9ee18a7f850fa21
-=
-decisions.txt,c/e/ce69ae9d03929c73ecf35a371d2104796c9ceb97
 F
 Documentation/Cards.md,c/5/c573a698812c969777e782d8a6c3d0d685d51bef
 R
