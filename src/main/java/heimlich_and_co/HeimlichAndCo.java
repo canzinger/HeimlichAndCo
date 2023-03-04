@@ -47,7 +47,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      */
     private int currentTurnPlayer;
     /**
-     * The Stack of cards where card will be drawn if needed.
+     * The Stack of cards where cards will be drawn from if needed.
      */
     private CardStack<HeimlichAndCoCard> cardStack;
     /**
@@ -319,7 +319,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
     /**
      * The game as seen from the given player.
      * In this case this means that private information that the given player should not
-     * be seeing from the game is stripped.
+     * be seeing is stripped from the game.
      * (playersToAgents Map, cards Map, cardStack)
      *
      * @param i - the player
@@ -447,6 +447,9 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         return board;
     }
 
+    /**
+     * @return the original reference of the cardStack
+     */
     public CardStack<HeimlichAndCoCard> getCardStack() {
         return cardStack;
     }
@@ -549,7 +552,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     /**
      * Collects all possible actions for the given game state and returns them as a set.
-     * If the game is over en empty set is returned.
+     * If the game is over an empty set is returned.
      *
      * @return a set of possible actions
      */
@@ -605,7 +608,7 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
 
     /**
      * Returns whether the game is canonical.
-     * Note: Always returns false
+     * Note: Returns false for Heimlich and Co
      *
      * @return false
      */
@@ -621,7 +624,6 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      */
     @Override
     public boolean isGameOver() {
-        // the game ends, if there is a score marker that reaches the field 42, i.e. if there is a player with a score of 42 or more.
         return board.isGameOver();
     }
 
@@ -727,12 +729,12 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
      * Gives information about the amount of dummy agents that need to be in play according to the rulebook.
      *
      * @return the number of dummy agents
-     * @throws IllegalArgumentException if realAgents < 2
+     * @throws IllegalArgumentException if invalid amount of real players
      */
     private int getNumberOfDummyAgents(int realAgents) {
         if (realAgents == 2 || realAgents == 3) {
             return 3;
-        } else if (realAgents > 3) {
+        } else if (realAgents > 3 && realAgents < 8) {
             return 7 - realAgents;
         }
         throw new IllegalArgumentException("Invalid amount of real players");

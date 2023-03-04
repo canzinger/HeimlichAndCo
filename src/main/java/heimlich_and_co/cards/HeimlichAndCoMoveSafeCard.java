@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This class represents the cards that can be used move the safe.
+ * This class represents the cards that can be used to move the safe.
  * In the traditional game, there is only one specific type of this card.
  */
 public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
@@ -84,7 +84,7 @@ public class HeimlichAndCoMoveSafeCard extends HeimlichAndCoCard {
 
     /**
      * Applies this specific card to the board.
-     * I.e. moves the score markers of two agents.
+     * I.e. moves the safe to the given field.
      *
      * @param board  to which the Card should be applied
      * @param agents which should be used for the card (not needed here/may be null)

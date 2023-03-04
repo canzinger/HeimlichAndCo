@@ -30,7 +30,7 @@ public class HeimlichAndCoDieRollAction implements HeimlichAndCoAction {
     }
 
     /**
-     * Creates a new HeimlichAndCoDieRollAction instance that represents a random (i.e.) real die roll.
+     * Creates a new HeimlichAndCoDieRollAction instance that represents a random (real) die roll.
      */
     public HeimlichAndCoDieRollAction() {
         dieRoll = 0;

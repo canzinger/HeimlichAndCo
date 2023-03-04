@@ -29,7 +29,7 @@ public class HeimlichAndCoSafeMoveAction implements HeimlichAndCoAction {
 
     /**
      * Calculates the possible Safe Move Actions depending on a board. Will not return the action to keep the safe on
-     * the location that it is currently on (i.e. that action is not allowed).
+     * the location that it is currently on (meaning that action is not allowed).
      *
      * @param board current board
      * @return Set of possible HeimlichAndCoActions

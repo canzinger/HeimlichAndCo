@@ -228,9 +228,7 @@ public class HeimlichAndCoBoard {
         if (buildingId < 0 || buildingId >= NUMBER_OF_FIELDS) {
             throw new IllegalArgumentException("Invalid buildingId.");
         }
-        if (safePosition != buildingId) {
-            scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap(); //this will always be reset when the safe is moved
-        }
+        scoringTriggeredForAgent = getNewScoringTriggeredForAgentMap(); //this will always be reset when the safe is moved
         safePosition = buildingId;
     }
 

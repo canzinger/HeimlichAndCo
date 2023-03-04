@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = 1.11
+
+def agent_name = 'HeimlichAndCoAgent'
+def agent_package = 'heimlich_and_co_agent'
+
+//def agent_name = 'Agent2'
+//def agent_package = 'heimlich_and_co_agent2'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation files('libs/HeimlichAndCo-1.0.0.jar')
+    implementation files('libs/sge-1.0.4-dq-exe.jar')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Sge-Type': 'agent'
+        attributes 'Agent-Class': agent_package +'.'+agent_name
+        attributes 'Agent-Name': agent_name
+    }
+    archivesBaseName = agent_name
+    includes = [agent_package +'/*']
+}
