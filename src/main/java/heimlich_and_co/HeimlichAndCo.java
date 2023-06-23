@@ -97,15 +97,24 @@ public class HeimlichAndCo implements Game<HeimlichAndCoAction, HeimlichAndCoBoa
         if (stripInformation) {
             playersToAgentsMap.put(game.currentPlayer, game.playersToAgentsMap.get(game.currentPlayer));
             if (withCards) {
+                for(Integer player: game.cards.keySet()) {
+                    cards.put(player, new LinkedList<>());
+                }
                 List<HeimlichAndCoCard> playerCards = game.cards.get(game.currentPlayer);
-                cards.put(game.getCurrentPlayer(), new LinkedList<>(playerCards));
+                if (playerCards!= null) {
+                    cards.get(game.getCurrentPlayer()).addAll(playerCards);
+                }
                 cardStack = HeimlichAndCoCardStackFactory.newInstance(game.cardStack.count());
             }
         } else {
             playersToAgentsMap.putAll(game.playersToAgentsMap);
             if (withCards) {
                 for (Integer player : game.cards.keySet()) {
-                    cards.put(player, new LinkedList<>(game.cards.get(player)));
+                    cards.put(player, new LinkedList<>());
+                    List<HeimlichAndCoCard> playerCards = game.cards.get(player);
+                    if (playerCards != null) {
+                        cards.get(player).addAll(playerCards);
+                    }
                 }
                 HeimlichAndCoCard[] oldCards = game.cardStack.getCards().toArray(new HeimlichAndCoCard[]{});
                 List<HeimlichAndCoCard> newCards = new LinkedList<>();
